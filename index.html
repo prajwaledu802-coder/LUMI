@@ -7,9 +7,8 @@
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LUMI AI Control Center 💙</title>
+    <title>LUMI AI Control Center</title>
 
-    <!-- AI Libraries -->
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -23,7 +22,6 @@
             --neon-violet: #bc13fe;
             --text-primary: #ffffff;
             --text-secondary: #94a3b8;
-            --font-main: 'Segoe UI', system-ui, sans-serif;
         }
 
         * {
@@ -35,13 +33,12 @@
         body {
             background: var(--bg-deep);
             color: var(--text-primary);
-            font-family: var(--font-main);
+            font-family: 'Segoe UI', system-ui, sans-serif;
             height: 100vh;
             display: flex;
             overflow: hidden;
         }
 
-        /* SIDEBAR */
         .sidebar {
             width: 70px;
             background: rgba(5, 10, 20, 0.95);
@@ -50,7 +47,6 @@
             flex-direction: column;
             align-items: center;
             padding: 20px 0;
-            z-index: 100;
         }
 
         .logo {
@@ -61,15 +57,9 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-weight: bold;
             margin-bottom: 40px;
             box-shadow: 0 0 20px rgba(0, 242, 255, 0.4);
             cursor: pointer;
-            transition: transform 0.3s;
-        }
-
-        .logo:hover {
-            transform: scale(1.1);
         }
 
         .nav-icon {
@@ -83,28 +73,15 @@
             font-size: 20px;
             color: var(--text-secondary);
             cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
+            transition: all 0.3s;
         }
 
         .nav-icon:hover,
         .nav-icon.active {
             background: rgba(0, 242, 255, 0.15);
             color: var(--neon-cyan);
-            transform: translateX(3px);
         }
 
-        .nav-icon.active::after {
-            content: '';
-            position: absolute;
-            left: -12px;
-            width: 4px;
-            height: 20px;
-            background: var(--neon-cyan);
-            border-radius: 0 4px 4px 0;
-        }
-
-        /* MAIN DASHBOARD GRID */
         .dashboard {
             flex: 1;
             padding: 20px;
@@ -123,8 +100,6 @@
             padding: 20px;
             display: flex;
             flex-direction: column;
-            position: relative;
-            overflow: hidden;
             box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
             transition: all 0.3s;
         }
@@ -132,7 +107,6 @@
         .card:hover {
             border-color: rgba(0, 242, 255, 0.2);
             transform: translateY(-2px);
-            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.4);
         }
 
         .card-header {
@@ -147,7 +121,6 @@
             letter-spacing: 1.2px;
         }
 
-        /* CARD 1: CAMERA VISION */
         #cam-container {
             flex: 1;
             background: #000;
@@ -168,7 +141,6 @@
             left: 15px;
             right: 15px;
             display: flex;
-            justify-content: space-between;
             gap: 10px;
         }
 
@@ -182,21 +154,18 @@
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s;
-            backdrop-filter: blur(10px);
         }
 
         .btn-sm:hover {
             background: var(--neon-cyan);
             color: #000;
-            transform: translateY(-2px);
         }
 
-        /* CARD 2: LUMI ORB */
         .lumi-core {
             align-items: center;
             justify-content: center;
             text-align: center;
-            background: radial-gradient(circle at center, rgba(188, 19, 254, 0.15) 0%, rgba(20, 30, 50, 0) 70%);
+            background: radial-gradient(circle, rgba(188, 19, 254, 0.15) 0%, transparent 70%);
         }
 
         .orb-wrapper {
@@ -215,13 +184,24 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            box-shadow:
-                0 0 60px rgba(188, 19, 254, 0.6),
-                0 0 100px rgba(0, 242, 255, 0.3),
-                inset 0 0 60px rgba(255, 255, 255, 0.1);
-            animation: breathe 5s infinite ease-in-out;
+            box-shadow: 0 0 60px rgba(188, 19, 254, 0.6);
             z-index: 10;
             cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .orb.idle {
+            animation: none;
+        }
+
+        .orb.listening {
+            animation: bounce 0.6s ease-in-out infinite;
+            box-shadow: 0 0 100px rgba(0, 242, 255, 0.9);
+        }
+
+        .orb.speaking {
+            animation: bounce 0.6s ease-in-out infinite;
+            box-shadow: 0 0 120px rgba(188, 19, 254, 1);
         }
 
         .orb-ring {
@@ -236,36 +216,13 @@
             animation: spin 20s linear infinite;
         }
 
-        .orb.listening {
-            animation: pulseFast 0.4s infinite alternate;
-            box-shadow:
-                0 0 100px rgba(0, 242, 255, 0.9),
-                0 0 150px rgba(188, 19, 254, 0.5);
-        }
-
-        .orb.thinking {
-            animation: shimmer 3s infinite;
-            box-shadow:
-                0 0 80px rgba(188, 19, 254, 0.8),
-                0 0 120px rgba(0, 242, 255, 0.4);
-        }
-
-        .orb.speaking {
-            animation: expand 2s infinite;
-            box-shadow:
-                0 0 120px rgba(188, 19, 254, 1),
-                0 0 180px rgba(0, 242, 255, 0.6);
-        }
-
         .orb-status {
             font-size: 15px;
             color: var(--text-secondary);
             margin-top: 10px;
             height: 24px;
-            font-weight: 500;
         }
 
-        /* Waveform */
         .waveform {
             display: flex;
             gap: 5px;
@@ -309,14 +266,11 @@
             animation-delay: 0.4s;
         }
 
-        /* CARD 3: LATENCY */
         .latency-chart-container {
             flex: 1;
             width: 100%;
-            position: relative;
         }
 
-        /* CARD 4: VISION DETAILS */
         .vision-details {
             display: flex;
             flex-direction: column;
@@ -330,12 +284,6 @@
             padding: 14px;
             border-radius: 10px;
             border-left: 3px solid rgba(0, 242, 255, 0.3);
-            transition: all 0.3s;
-        }
-
-        .detail-row:hover {
-            background: rgba(255, 255, 255, 0.05);
-            border-left-color: var(--neon-cyan);
         }
 
         .detail-label {
@@ -349,7 +297,6 @@
             font-size: 14px;
         }
 
-        /* CARD 5: CONVERSATION */
         .chat-container {
             flex: 1;
             overflow-y: auto;
@@ -365,21 +312,19 @@
             border-radius: 15px;
             font-size: 14px;
             line-height: 1.5;
-            animation: fadeIn 0.3s ease-out;
+            animation: fadeIn 0.3s;
         }
 
         .msg.user {
             align-self: flex-end;
             background: rgba(0, 242, 255, 0.12);
             border: 1px solid rgba(0, 242, 255, 0.3);
-            color: #fff;
         }
 
         .msg.lumi {
             align-self: flex-start;
             background: rgba(188, 19, 254, 0.12);
             border: 1px solid rgba(188, 19, 254, 0.3);
-            color: #fff;
         }
 
         .msg-time {
@@ -387,15 +332,12 @@
             opacity: 0.5;
             margin-top: 4px;
             display: block;
-            text-align: right;
         }
 
-        /* CARD 6: SYSTEM HEALTH */
         .stat-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 12px;
-            height: 100%;
         }
 
         .stat-box {
@@ -405,30 +347,20 @@
             display: flex;
             flex-direction: column;
             justify-content: center;
-            transition: all 0.3s;
-        }
-
-        .stat-box:hover {
-            background: rgba(255, 255, 255, 0.06);
-            transform: translateY(-2px);
         }
 
         .stat-num {
             font-size: 26px;
             font-weight: bold;
-            color: #fff;
             margin-bottom: 6px;
         }
 
         .stat-desc {
             font-size: 11px;
             color: var(--text-secondary);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
         }
 
-        /* ANIMATIONS */
-        @keyframes breathe {
+        @keyframes bounce {
 
             0%,
             100% {
@@ -436,39 +368,7 @@
             }
 
             50% {
-                transform: translate(-50%, -50%) scale(1.05)
-            }
-        }
-
-        @keyframes pulseFast {
-            0% {
-                transform: translate(-50%, -50%) scale(1)
-            }
-
-            100% {
-                transform: translate(-50%, -50%) scale(1.15)
-            }
-        }
-
-        @keyframes shimmer {
-            0% {
-                transform: translate(-50%, -50%) rotate(0deg)
-            }
-
-            100% {
-                transform: translate(-50%, -50%) rotate(360deg)
-            }
-        }
-
-        @keyframes expand {
-
-            0%,
-            100% {
-                transform: translate(-50%, -50%) scale(1)
-            }
-
-            50% {
-                transform: translate(-50%, -50%) scale(1.12)
+                transform: translate(-50%, -50%) scale(1.1)
             }
         }
 
@@ -502,7 +402,6 @@
             }
         }
 
-        /* Scrollbar */
         ::-webkit-scrollbar {
             width: 6px;
         }
@@ -515,29 +414,22 @@
             background: rgba(0, 242, 255, 0.3);
             border-radius: 3px;
         }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: rgba(0, 242, 255, 0.5);
-        }
     </style>
 </head>
 
 <body>
 
-    <!-- SIDEBAR -->
     <div class="sidebar">
-        <div class="logo">💙</div>
-        <div class="nav-icon active" title="Dashboard">⊞</div>
-        <div class="nav-icon" title="Conversations">💬</div>
-        <div class="nav-icon" title="Music">🎵</div>
-        <div class="nav-icon" title="Vision">👁</div>
-        <div class="nav-icon" title="Settings">⚙</div>
+        <div class="logo">L</div>
+        <div class="nav-icon active">⊞</div>
+        <div class="nav-icon">💬</div>
+        <div class="nav-icon">🎵</div>
+        <div class="nav-icon">👁</div>
+        <div class="nav-icon">⚙</div>
     </div>
 
-    <!-- MAIN DASHBOARD -->
     <div class="dashboard">
 
-        <!-- 1. TOP LEFT: VISION -->
         <div class="card">
             <div class="card-header">
                 <span>Vision Uplink</span>
@@ -552,14 +444,13 @@
             </div>
         </div>
 
-        <!-- 2. TOP CENTER: LUMI CORE -->
         <div class="card lumi-core" onclick="toggleVoice()">
             <div class="orb-wrapper">
                 <div class="orb-ring"></div>
-                <div class="orb" id="orb"></div>
+                <div class="orb idle" id="orb"></div>
             </div>
 
-            <div class="orb-status" id="orb-status">Hi! Tap me to talk 💙</div>
+            <div class="orb-status" id="orb-status">Tap to activate</div>
 
             <div class="waveform" id="waveform">
                 <div class="bar"></div>
@@ -570,7 +461,6 @@
             </div>
         </div>
 
-        <!-- 3. TOP RIGHT: LATENCY -->
         <div class="card">
             <div class="card-header">
                 <span>Neural Latency</span>
@@ -581,12 +471,10 @@
             </div>
         </div>
 
-        <!-- 4. BOTTOM LEFT: VISION DATA -->
         <div class="card vision-details">
             <div class="card-header">Scan Analysis</div>
-
             <div class="detail-row">
-                <span class="detail-label">OBJECT DETECTED</span>
+                <span class="detail-label">OBJECT</span>
                 <span class="detail-value" id="det-object">Standby</span>
             </div>
             <div class="detail-row">
@@ -603,18 +491,16 @@
             </div>
         </div>
 
-        <!-- 5. BOTTOM CENTER: CONVERSATION -->
         <div class="card">
             <div class="card-header">Conversation</div>
             <div class="chat-container" id="chat">
                 <div class="msg lumi">
-                    Hi there! I'm LUMI, your AI companion. I'm here with you 💙
+                    Hi! I'm LUMI. I'm ready to help you.
                     <span class="msg-time">Now</span>
                 </div>
             </div>
         </div>
 
-        <!-- 6. BOTTOM RIGHT: SYSTEM -->
         <div class="card">
             <div class="card-header">System Status</div>
             <div class="stat-grid">
@@ -623,16 +509,16 @@
                     <span class="stat-desc">Requests</span>
                 </div>
                 <div class="stat-box">
-                    <span class="stat-num" id="stat-uptime">100%</span>
+                    <span class="stat-num">100%</span>
                     <span class="stat-desc">Uptime</span>
                 </div>
                 <div class="stat-box">
                     <span class="stat-num" style="color:#10b981">Active</span>
-                    <span class="stat-desc">Voice Core</span>
+                    <span class="stat-desc">Voice</span>
                 </div>
                 <div class="stat-box">
                     <span class="stat-num" style="color:var(--neon-cyan)">Ready</span>
-                    <span class="stat-desc">Vision AI</span>
+                    <span class="stat-desc">Vision</span>
                 </div>
             </div>
         </div>
@@ -640,7 +526,6 @@
     </div>
 
     <script>
-        // GLOBAL STATE
         let isListening = false;
         let recognition;
         let model;
@@ -648,51 +533,51 @@
         let latencyPoints = Array(20).fill(0);
         let chartInstance;
         let requestCount = 0;
+        let silenceTimer;
+        let currentTranscript = '';
 
-        // CARING RESPONSES
-        const caringResponses = {
+        // SMART RESPONSES (NO EXCESSIVE EMOJIS)
+        const responses = {
             greeting: [
-                "Hi there! I'm so happy to talk with you 💙",
-                "Hello! I'm here for you, always 💙",
-                "Hey! How are you feeling today? 💙"
+                "Hey! What can I do for you?",
+                "Hi there! How can I help?",
+                "Hello! I'm listening."
             ],
             music: [
-                "Of course! I'll play something nice for you 💙",
-                "Sure thing! Let me find some music you'll love 💙",
-                "I'd love to! Starting music now 💙"
+                "Sure, opening YouTube for that.",
+                "Got it, finding music now.",
+                "Playing that for you."
             ],
             vision: [
-                "Let me take a look for you 💙",
-                "I'm activating my vision... one moment 💙",
-                "Sure! Let me see what's there 💙"
+                "Activating camera now.",
+                "Let me take a look.",
+                "Camera is on."
+            ],
+            browser: [
+                "Opening that now.",
+                "Sure, launching the browser.",
+                "On it."
             ],
             general: [
-                "I'm here to help you with anything 💙",
-                "I understand. Let me help you with that 💙",
-                "I've got you. Don't worry 💙"
+                "I'm on it.",
+                "Got it.",
+                "Sure thing."
             ]
         };
 
-        function pickRandom(arr) {
+        function pick(arr) {
             return arr[Math.floor(Math.random() * arr.length)];
         }
 
-        // INIT
         window.addEventListener('load', async () => {
             initChart();
             try {
                 model = await cocoSsd.load();
-                console.log("✅ Vision AI loaded");
-            } catch (e) { console.warn("Vision loading...", e); }
+            } catch (e) { }
 
-            // Load voices
             speechSynthesis.getVoices();
-            setTimeout(() => {
-                speak(pickRandom(caringResponses.greeting));
-            }, 1500);
         });
 
-        // VOICE SYSTEM (IMPROVED)
         function toggleVoice() {
             if (!recognition) setupVoice();
             if (isListening) {
@@ -700,17 +585,16 @@
             } else {
                 try {
                     recognition.start();
-                } catch (e) {
-                    console.log("Already listening");
-                }
+                } catch (e) { }
             }
         }
 
         function setupVoice() {
             if (!('webkitSpeechRecognition' in window)) {
-                alert("Please use Chrome for voice features 💙");
+                alert("Use Chrome for voice");
                 return;
             }
+
             recognition = new webkitSpeechRecognition();
             recognition.continuous = true;
             recognition.interimResults = true;
@@ -719,38 +603,44 @@
             recognition.onstart = () => {
                 isListening = true;
                 updateOrb('listening');
-                document.getElementById('orb-status').innerText = "I'm listening... 💙";
+                document.getElementById('orb-status').innerText = "Listening...";
                 document.getElementById('waveform').classList.add('active');
             };
 
             recognition.onend = () => {
                 isListening = false;
                 updateOrb('idle');
-                document.getElementById('orb-status').innerText = "Tap to talk again 💙";
+                document.getElementById('orb-status').innerText = "Tap to talk";
                 document.getElementById('waveform').classList.remove('active');
             };
 
             recognition.onresult = (event) => {
-                const transcript = Array.from(event.results)
-                    .map(result => result[0])
-                    .map(result => result.transcript)
-                    .join('');
+                clearTimeout(silenceTimer);
 
-                if (event.results[event.results.length - 1].isFinal) {
-                    processCommand(transcript.trim());
+                const result = event.results[event.results.length - 1];
+                currentTranscript = result[0].transcript;
+
+                // WAIT FOR PAUSE (2 seconds of silence)
+                if (result.isFinal) {
+                    silenceTimer = setTimeout(() => {
+                        if (currentTranscript.trim()) {
+                            processCommand(currentTranscript.trim());
+                            currentTranscript = '';
+                        }
+                    }, 2000); // Wait 2 seconds after user stops talking
                 }
             };
 
             recognition.onerror = (e) => {
                 console.error("Voice error:", e.error);
-                speak("I'm having a little trouble hearing you. Let's try again 💙");
             };
         }
 
         async function processCommand(text) {
             addMessage('user', text);
-            updateOrb('thinking');
-            document.getElementById('orb-status').innerText = "Thinking... 💙";
+            updateOrb('idle');
+            document.getElementById('waveform').classList.remove('active');
+            document.getElementById('orb-status').innerText = "Thinking...";
 
             const startT = performance.now();
             let response = "";
@@ -758,32 +648,36 @@
 
             text = text.toLowerCase();
 
-            if (text.includes('hello') || text.includes('hi')) {
-                response = pickRandom(caringResponses.greeting);
+            // COMMAND DETECTION
+            if (text.includes('hello') || text.includes('hi') || text.includes('hey')) {
+                response = pick(responses.greeting);
             }
             else if (text.includes('music') || text.includes('play') || text.includes('song')) {
-                response = pickRandom(caringResponses.music);
+                response = pick(responses.music);
                 action = () => window.open(`https://youtube.com/results?search_query=${encodeURIComponent(text)}`, '_blank');
             }
-            else if (text.includes('vision') || text.includes('camera') || text.includes('scan') || text.includes('see')) {
-                response = pickRandom(caringResponses.vision);
+            else if (text.includes('camera') || text.includes('vision') || text.includes('scan') || text.includes('see')) {
+                response = pick(responses.vision);
                 action = toggleCamera;
             }
-            else if (text.includes('youtube') || text.includes('open')) {
-                response = "Opening that for you now 💙";
-                action = () => window.open('https://youtube.com', '_blank');
+            else if (text.includes('open') || text.includes('youtube') || text.includes('instagram') || text.includes('google')) {
+                response = pick(responses.browser);
+                if (text.includes('youtube')) action = () => window.open('https://youtube.com', '_blank');
+                else if (text.includes('instagram')) action = () => window.open('https://instagram.com', '_blank');
+                else if (text.includes('google')) action = () => window.open('https://google.com', '_blank');
+                else action = () => window.open(`https://google.com/search?q=${encodeURIComponent(text)}`, '_blank');
             }
             else {
-                response = pickRandom(caringResponses.general);
+                response = pick(responses.general);
             }
 
-            await new Promise(r => setTimeout(r, 500));
+            await new Promise(r => setTimeout(r, 400));
 
             const endT = performance.now();
             updateLatency(Math.round(endT - startT));
 
             updateOrb('speaking');
-            document.getElementById('orb-status').innerText = "Speaking... 💙";
+            document.getElementById('orb-status').innerText = "Speaking...";
             await speak(response);
             addMessage('lumi', response);
 
@@ -793,36 +687,35 @@
             setTimeout(() => {
                 if (isListening) {
                     updateOrb('listening');
-                    document.getElementById('orb-status').innerText = "I'm listening... 💙";
+                    document.getElementById('orb-status').innerText = "Listening...";
+                    document.getElementById('waveform').classList.add('active');
                 } else {
                     updateOrb('idle');
-                    document.getElementById('orb-status').innerText = "Tap to talk 💙";
+                    document.getElementById('orb-status').innerText = "Tap to talk";
                 }
-            }, 1000);
+            }, 500);
         }
 
         function speak(text) {
             return new Promise((resolve) => {
                 const u = new SpeechSynthesisUtterance(text);
-                u.rate = 0.85; // Slower, more caring
-                u.pitch = 1.2; // Higher, more feminine
+                u.rate = 1.0; // Normal speed
+                u.pitch = 1.3; // Higher pitch (teen girl)
                 u.volume = 1.0;
                 u.lang = 'en-US';
 
-                // Try to find best female voice
+                // FIND BEST FEMALE VOICE
                 const voices = speechSynthesis.getVoices();
                 const femaleVoice = voices.find(v =>
                     v.name.includes('Google UK English Female') ||
                     v.name.includes('Microsoft Zira') ||
                     v.name.includes('Samantha') ||
-                    v.name.includes('Female') ||
-                    v.name.includes('Woman')
-                ) || voices.find(v => v.lang.includes('en')) || voices[0];
+                    v.name.includes('Victoria') ||
+                    v.name.includes('Karen') ||
+                    (v.name.includes('Female') && v.lang.includes('en'))
+                ) || voices.find(v => v.lang.includes('en-US')) || voices[0];
 
-                if (femaleVoice) {
-                    u.voice = femaleVoice;
-                    console.log("Using voice:", femaleVoice.name);
-                }
+                if (femaleVoice) u.voice = femaleVoice;
 
                 u.onend = resolve;
                 u.onerror = resolve;
@@ -830,7 +723,6 @@
             });
         }
 
-        // VISION SYSTEM
         async function toggleCamera() {
             const v = document.getElementById('video-feed');
             if (videoStream) {
@@ -843,16 +735,16 @@
                     videoStream = await navigator.mediaDevices.getUserMedia({ video: true });
                     v.srcObject = videoStream;
                     startScanning();
-                    speak("Camera is active now 💙");
+                    speak("Camera activated.");
                 } catch (e) {
-                    alert("Camera access needed 💙");
+                    alert("Camera permission needed");
                 }
             }
         }
 
         async function analyzeFrame() {
             if (!model || !videoStream) {
-                speak("Please activate the camera first 💙");
+                speak("Please activate camera first.");
                 return;
             }
 
@@ -867,11 +759,11 @@
                 document.getElementById('det-emotion').innerText = ["CALM", "FOCUSED", "HAPPY"][Math.floor(Math.random() * 3)];
                 document.getElementById('det-bio').innerText = "Matched";
 
-                speak(`I see a ${best.class} 💙`);
-                addMessage('lumi', `I detected a ${best.class} with ${conf}% confidence 💙`);
+                speak(`I see a ${best.class}.`);
+                addMessage('lumi', `Detected: ${best.class} (${conf}% confidence)`);
             } else {
                 document.getElementById('det-object').innerText = "Scanning...";
-                speak("I'm not sure what that is. Could you adjust the angle? 💙");
+                speak("Not sure. Adjust the angle?");
             }
         }
 
@@ -882,7 +774,6 @@
             }
         }
 
-        // UI UPDATES
         function updateOrb(state) {
             const o = document.getElementById('orb');
             o.className = 'orb ' + state;
@@ -898,7 +789,6 @@
             c.scrollTop = c.scrollHeight;
         }
 
-        // CHARTS
         function initChart() {
             const ctx = document.getElementById('latencyChart').getContext('2d');
             chartInstance = new Chart(ctx, {
@@ -906,7 +796,6 @@
                 data: {
                     labels: Array(20).fill(''),
                     datasets: [{
-                        label: 'ms',
                         data: latencyPoints,
                         borderColor: '#bc13fe',
                         borderWidth: 2,
