@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 load_dotenv(dotenv_path="e:\\LUMI AI\\JARVIS-AI-Assistant-main\\.env") 
 
 from PyQt6.QtWidgets import QApplication
-from PyQt6.QtCore import QObject, pyqtSignal
+from PyQt6.QtCore import QObject, pyqtSignal, QTimer
 
 # Import components
 from lumi.ui.splash import CinematicSplash
@@ -24,47 +24,56 @@ class SignalBridge(QObject):
     update_status = pyqtSignal(str)
     add_message = pyqtSignal(str, str)
 
+from lumi.ui.login import LoginUI
+
 class MainApp:
     def __init__(self):
         self.app = QApplication(sys.argv)
-        
-        # Show Splash
-        self.splash = CinematicSplash()
-        self.splash.show()
-        
-        # Simulate loading while splash runs
-        # Real loading happens parallel
-        
-        self.ui = LUMIUI()
         self.bridge = SignalBridge()
         
-        # Connect signals
-        self.bridge.update_status.connect(self.ui.update_status)
-        self.bridge.add_message.connect(self.ui.add_message)
-        
-        # Connect Text Input
-        self.ui.send_btn.clicked.connect(self.on_submit_text)
-        self.ui.text_input.returnPressed.connect(self.on_submit_text)
-        
-        # Initialize Backend
+        # 1. Initialize Backend
         self.stt = SpeechToText()
         self.tts = TextToSpeech()
         self.router = AIRouter()
-        self.wake_word = WakeWordListener(on_wake=self.on_wake)
+        try:
+            self.wake_word = WakeWordListener(on_wake=self.on_wake)
+        except:
+            self.wake_word = None
         
-        self.running = True
+        # 2. UI Instances
+        self.splash = CinematicSplash()
+        self.login_ui = LoginUI()
+        self.ui = LUMIUI()
+        
+        # 3. Connect Signals
+        self.bridge.update_status.connect(self.ui.update_status)
+        self.bridge.add_message.connect(self.ui.add_message)
+        
+        self.ui.send_btn.clicked.connect(self.on_submit_text)
+        self.ui.text_input.returnPressed.connect(self.on_submit_text)
+        
+        self.login_ui.login_successful.connect(self.on_login_success)
 
     def start(self):
-        # Fake loading time for splash effect
-        time.sleep(2) 
-        self.splash.finish(self.ui) # Close splash, show main
+        # Step 1: Show Splash
+        self.splash.show()
+        
+        # Simulate load then show Login
+        QTimer.singleShot(3000, self.show_login)
+        
+        sys.exit(self.app.exec())
+
+    def show_login(self):
+        self.splash.close()
+        self.login_ui.show()
+
+    def on_login_success(self):
+        self.login_ui.close()
         self.ui.show()
         
-        # Start Wake Word Listener in clean thread
-        threading.Thread(target=self.wake_word.start, daemon=True).start()
-        
-        # Start Orchestrator Loop if needed, but here we drive by events
-        sys.exit(self.app.exec())
+        # Start Listeners
+        if self.wake_word:
+            threading.Thread(target=self.wake_word.start, daemon=True).start()
 
     def on_submit_text(self):
         text = self.ui.text_input.text()

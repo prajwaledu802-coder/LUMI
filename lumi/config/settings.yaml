@@ -15,8 +15,10 @@ ai:
     creative: "gemini"
   
   api_keys:
-    gemini: "${GEMINI_API_KEY}"
-    openai: "${OPENAI_API_KEY}"
+    gemini: ""
+    openai: ""
+    porcupine: ""
+    elevenlabs: ""
 
 voice:
   stt_engine: "google"  # google, whisper_local

@@ -28,17 +28,26 @@
     ```
     *Note: For voice support on Windows, you may need to install `pyaudio` via `pipwin` or Visual Studio Build Tools.*
 
-3.  Configure API Keys:
-    - Create a `.env` file in the root directory.
-    - Add your keys:
-      ```
-      GEMINI_API_KEY=your_key
-      OPENAI_API_KEY=your_key
-      ELEVEN_API_KEY=your_key
-      PICOVOICE_API_KEY=your_key
-      ```
+## Security & Configuration 🔒
 
-4.  Run the application:
+**IMPORTANT**: This project is configured to keep your API keys safe. **DO NOT** commit your keys to GitHub.
+
+1.  **Project Settings**:
+    - The main configuration is in `lumi/config/settings.yaml`.
+    - Note that `api_keys` are set to empty strings by default for safety.
+
+2.  **Add Your Keys (The Safe Way)**:
+    - Create a file named `.env` or `settings.local.yaml` in the root directory.
+    - Add your keys there:
+      ```
+      GEMINI_API_KEY=your_key_here
+      OPENAI_API_KEY=your_key_here
+      ELEVEN_API_KEY=your_key_here
+      PICOVOICE_API_KEY=your_key_here
+      ```
+    - These files are already in `.gitignore` and will not be uploaded.
+
+3.  **Run the application**:
     ```bash
     run_lumi.bat
     ```

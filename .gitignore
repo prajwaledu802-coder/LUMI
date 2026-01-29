@@ -7,3 +7,5 @@ data/memory.json
 venv/
 .idea/
 .vscode/
+settings.local.yaml
+*.key
