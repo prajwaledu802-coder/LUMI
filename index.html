@@ -7,7 +7,12 @@
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LUMI AI - Advanced Vision & Voice Assistant</title>
+    <title>LUMI - Your AI Companion 💙</title>
+
+    <!-- TensorFlow.js for Camera Vision -->
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd"></script>
+
     <style>
         * {
             margin: 0;
@@ -15,10 +20,22 @@
             box-sizing: border-box;
         }
 
+        :root {
+            --bg-night: linear-gradient(135deg, #0a0f1a 0%, #1a1a2e 50%, #16213e 100%);
+            --orb-cyan: #00d4ff;
+            --orb-violet: #a855f7;
+            --warm-glow: #f59e0b;
+            --calm-red: #f87171;
+            --glass-bg: rgba(30, 30, 50, 0.5);
+            --border-soft: rgba(255, 255, 255, 0.08);
+            --text-main: #ffffff;
+            --text-dim: #9ca3af;
+        }
+
         body {
             font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-            background: linear-gradient(135deg, #0a0f1a 0%, #1a1a2e 50%, #16213e 100%);
-            color: #fff;
+            background: var(--bg-night);
+            color: var(--text-main);
             min-height: 100vh;
             display: flex;
             overflow: hidden;
@@ -28,7 +45,7 @@
         .sidebar {
             width: 80px;
             background: rgba(10, 10, 20, 0.95);
-            border-right: 1px solid rgba(102, 126, 234, 0.2);
+            border-right: 1px solid var(--border-soft);
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -39,15 +56,15 @@
         .logo {
             width: 50px;
             height: 50px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, var(--orb-cyan), var(--orb-violet));
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 24px;
-            margin-bottom: 40px;
-            box-shadow: 0 4px 20px rgba(102, 126, 234, 0.5);
+            margin-bottom: 50px;
             cursor: pointer;
+            box-shadow: 0 0 30px rgba(0, 212, 255, 0.4);
             transition: transform 0.3s;
         }
 
@@ -56,277 +73,182 @@
         }
 
         .nav-item {
-            width: 50px;
-            height: 50px;
-            margin: 15px 0;
+            width: 55px;
+            height: 55px;
+            margin: 12px 0;
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
             border-radius: 12px;
             cursor: pointer;
             transition: all 0.3s;
             font-size: 20px;
-            color: #6b7280;
+            color: var(--text-dim);
             position: relative;
+        }
+
+        .nav-item span {
+            font-size: 9px;
+            margin-top: 4px;
+            opacity: 0.7;
         }
 
         .nav-item:hover,
         .nav-item.active {
-            background: rgba(102, 126, 234, 0.2);
-            color: #667eea;
-            transform: translateX(5px);
+            background: rgba(0, 212, 255, 0.15);
+            color: var(--orb-cyan);
+            transform: translateX(3px);
         }
 
-        /* Main Content */
+        .nav-item.active::before {
+            content: '';
+            position: absolute;
+            left: -15px;
+            width: 3px;
+            height: 30px;
+            background: var(--orb-cyan);
+            border-radius: 2px;
+        }
+
+        /* Main Content Area */
         .main {
             flex: 1;
+            display: flex;
+            flex-direction: column;
             padding: 30px;
             overflow-y: auto;
         }
 
+        /* Header */
         .header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
         }
 
         .header h1 {
-            font-size: 28px;
+            font-size: 24px;
             font-weight: 600;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, var(--orb-cyan), var(--orb-violet));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
 
-        .user-info {
+        .user-controls {
             display: flex;
-            gap: 15px;
-            align-items: center;
+            gap: 12px;
         }
 
         .icon-btn {
-            width: 42px;
-            height: 42px;
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
             background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--border-soft);
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
             transition: all 0.3s;
-            font-size: 18px;
+            font-size: 16px;
         }
 
         .icon-btn:hover {
-            background: rgba(102, 126, 234, 0.2);
-            border-color: rgba(102, 126, 234, 0.5);
+            background: rgba(0, 212, 255, 0.15);
+            border-color: var(--orb-cyan);
             transform: translateY(-2px);
         }
 
-        /* Main Grid */
-        .dashboard-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            grid-template-rows: auto auto;
-            gap: 25px;
-            height: calc(100vh - 140px);
-        }
-
-        .card {
-            background: rgba(30, 30, 50, 0.5);
-            border-radius: 20px;
-            padding: 25px;
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            transition: all 0.3s;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 2px;
-            background: linear-gradient(90deg, transparent, #667eea, transparent);
-            opacity: 0;
-            transition: opacity 0.3s;
-        }
-
-        .card:hover::before {
-            opacity: 1;
-        }
-
-        .card:hover {
-            border-color: rgba(102, 126, 234, 0.3);
-            transform: translateY(-3px);
-            box-shadow: 0 10px 40px rgba(102, 126, 234, 0.2);
-        }
-
-        /* Camera Panel (Large Top Left) */
-        .camera-panel {
-            grid-column: 1 / 2;
-            grid-row: 1 / 3;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .camera-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        .camera-title {
-            font-size: 18px;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .status-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: #10b981;
-            animation: pulse-dot 2s infinite;
-        }
-
-        @keyframes pulse-dot {
-
-            0%,
-            100% {
-                opacity: 1;
-            }
-
-            50% {
-                opacity: 0.4;
-            }
-        }
-
-        #videoFeed {
-            width: 100%;
-            height: 380px;
-            border-radius: 15px;
-            background: #000;
-            object-fit: cover;
-            margin-bottom: 20px;
-        }
-
-        .vision-result {
-            padding: 15px;
-            background: rgba(102, 126, 234, 0.1);
-            border-radius: 10px;
-            border-left: 3px solid #667eea;
-            min-height: 60px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .vision-result-text {
-            flex: 1;
-            font-size: 15px;
-            line-height: 1.5;
-        }
-
-        .camera-controls {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 15px;
-        }
-
-        .camera-btn {
-            flex: 1;
-            padding: 12px;
-            border: none;
-            border-radius: 10px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .camera-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
-        }
-
-        .camera-btn.secondary {
-            background: rgba(255, 255, 255, 0.1);
-        }
-
-        /* Voice Control Panel */
-        .voice-panel {
-            grid-column: 2 / 3;
-            grid-row: 1 / 2;
+        /* LUMI Core Zone */
+        .lumi-zone {
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
+            padding: 40px 20px;
+            position: relative;
         }
 
+        /* Status Text Above Orb */
+        .status-text {
+            font-size: 14px;
+            color: var(--text-dim);
+            margin-bottom: 20px;
+            min-height: 20px;
+            text-align: center;
+        }
+
+        /* LUMI Orb Container */
         .orb-container {
             position: relative;
-            width: 180px;
-            height: 180px;
+            width: 280px;
+            height: 280px;
             margin: 20px 0;
         }
 
+        /* Main Orb */
         .orb {
-            width: 150px;
-            height: 150px;
+            width: 220px;
+            height: 220px;
             border-radius: 50%;
-            background: radial-gradient(circle at 30% 30%, #667eea 0%, #764ba2 100%);
+            background: radial-gradient(circle at 30% 30%, var(--orb-cyan), var(--orb-violet));
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            box-shadow: 0 0 60px rgba(102, 126, 234, 0.6);
-            animation: float 6s ease-in-out infinite;
+            box-shadow:
+                0 0 60px rgba(0, 212, 255, 0.4),
+                0 0 100px rgba(168, 85, 247, 0.2),
+                inset 0 0 60px rgba(255, 255, 255, 0.1);
+            animation: breathe 4s ease-in-out infinite;
         }
 
         .orb::before {
             content: '';
             position: absolute;
-            width: 100%;
-            height: 100%;
+            width: 110%;
+            height: 110%;
             border-radius: 50%;
-            border: 2px solid rgba(102, 126, 234, 0.3);
+            border: 2px solid rgba(0, 212, 255, 0.3);
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
             animation: spin 20s linear infinite;
         }
 
-        @keyframes float {
-
-            0%,
-            100% {
-                transform: translate(-50%, -50%) translateY(0);
-            }
-
-            50% {
-                transform: translate(-50%, -50%) translateY(-15px);
-            }
+        /* Orb States */
+        .orb.listening {
+            animation: voicePulse 0.3s ease-in-out infinite;
+            box-shadow:
+                0 0 80px rgba(0, 212, 255, 0.8),
+                0 0 120px rgba(168, 85, 247, 0.4);
         }
 
-        @keyframes spin {
-            100% {
-                transform: rotate(360deg) scale(1.1);
-            }
+        .orb.thinking {
+            animation: shimmerRotate 3s ease-in-out infinite;
+            box-shadow:
+                0 0 70px rgba(168, 85, 247, 0.6),
+                0 0 110px rgba(0, 212, 255, 0.3);
         }
 
-        .listening .orb {
-            animation: pulse 1s ease-in-out infinite;
-            box-shadow: 0 0 80px rgba(102, 126, 234, 1);
+        .orb.responding {
+            animation: warmExpand 2s ease-out;
+            box-shadow:
+                0 0 90px rgba(245, 158, 11, 0.7),
+                0 0 130px rgba(0, 212, 255, 0.3);
         }
 
-        @keyframes pulse {
+        .orb.error {
+            animation: calmError 2s ease-in-out;
+            box-shadow:
+                0 0 60px rgba(248, 113, 113, 0.5),
+                0 0 100px rgba(168, 85, 247, 0.2);
+        }
+
+        /* Animations */
+        @keyframes breathe {
 
             0%,
             100% {
@@ -334,102 +256,295 @@
             }
 
             50% {
-                transform: translate(-50%, -50%) scale(1.15);
+                transform: translate(-50%, -50%) scale(1.05);
             }
         }
 
-        .voice-btn {
-            padding: 15px 40px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        @keyframes voicePulse {
+
+            0%,
+            100% {
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 1;
+            }
+
+            50% {
+                transform: translate(-50%, -50%) scale(1.12);
+                opacity: 0.95;
+            }
+        }
+
+        @keyframes shimmerRotate {
+            0% {
+                transform: translate(-50%, -50%) rotate(0deg);
+            }
+
+            100% {
+                transform: translate(-50%, -50%) rotate(360deg);
+            }
+        }
+
+        @keyframes warmExpand {
+            0% {
+                transform: translate(-50%, -50%) scale(1);
+            }
+
+            50% {
+                transform: translate(-50%, -50%) scale(1.15);
+            }
+
+            100% {
+                transform: translate(-50%, -50%) scale(1);
+            }
+        }
+
+        @keyframes calmError {
+
+            0%,
+            100% {
+                transform: translate(-50%, -50%) scale(1);
+            }
+
+            50% {
+                transform: translate(-50%, -50%) scale(0.95);
+            }
+        }
+
+        @keyframes spin {
+            100% {
+                transform: translate(-50%, -50%) rotate(360deg);
+            }
+        }
+
+        /* Voice Waveform */
+        .waveform {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            margin-top: 20px;
+            height: 40px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .waveform.active {
+            opacity: 1;
+        }
+
+        .wave-bar {
+            width: 3px;
+            background: linear-gradient(to top, var(--orb-cyan), var(--orb-violet));
+            border-radius: 2px;
+            animation: waveMotion 0.5s ease-in-out infinite;
+        }
+
+        .wave-bar:nth-child(1) {
+            animation-delay: 0s;
+        }
+
+        .wave-bar:nth-child(2) {
+            animation-delay: 0.1s;
+        }
+
+        .wave-bar:nth-child(3) {
+            animation-delay: 0.2s;
+        }
+
+        .wave-bar:nth-child(4) {
+            animation-delay: 0.3s;
+        }
+
+        .wave-bar:nth-child(5) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes waveMotion {
+
+            0%,
+            100% {
+                height: 10px;
+            }
+
+            50% {
+                height: 35px;
+            }
+        }
+
+        /* Latency Display */
+        .latency-display {
+            margin-top: 15px;
+            padding: 10px 20px;
+            background: rgba(0, 212, 255, 0.1);
+            border: 1px solid rgba(0, 212, 255, 0.3);
+            border-radius: 20px;
+            font-size: 13px;
+            color: var(--orb-cyan);
+            min-width: 200px;
+            text-align: center;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .latency-display.active {
+            opacity: 1;
+        }
+
+        /* Activate Button */
+        .activate-btn {
+            margin-top: 30px;
+            padding: 15px 50px;
+            background: linear-gradient(135deg, var(--orb-cyan), var(--orb-violet));
             border: none;
-            border-radius: 25px;
+            border-radius: 30px;
             color: white;
             font-size: 16px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s;
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
-            margin-top: 15px;
+            box-shadow: 0 4px 20px rgba(0, 212, 255, 0.3);
         }
 
-        .voice-btn:hover {
+        .activate-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+            box-shadow: 0 6px 25px rgba(0, 212, 255, 0.5);
         }
 
-        .voice-status {
-            margin-top: 15px;
-            padding: 10px 20px;
-            background: rgba(255, 255, 255, 0.05);
+        /* Chat Timeline */
+        .chat-timeline {
+            max-width: 800px;
+            width: 100%;
+            margin: 30px auto 0;
+            max-height: 300px;
+            overflow-y: auto;
+            padding: 20px;
+            background: var(--glass-bg);
             border-radius: 20px;
-            font-size: 14px;
-            color: #9ca3af;
+            border: 1px solid var(--border-soft);
+            backdrop-filter: blur(20px);
         }
 
-        /* Stats Cards */
-        .stat-card {
-            cursor: pointer;
-        }
-
-        .stat-label {
-            color: #6b7280;
-            font-size: 13px;
-            margin-bottom: 10px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .stat-value {
-            font-size: 32px;
-            font-weight: 700;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 10px;
-        }
-
-        .mini-chart {
-            height: 60px;
+        .message {
+            margin: 15px 0;
             display: flex;
-            align-items: flex-end;
-            gap: 6px;
-            margin-top: 15px;
+            align-items: flex-start;
+            animation: fadeIn 0.3s ease-out;
         }
 
-        .mini-bar {
-            flex: 1;
-            background: rgba(102, 126, 234, 0.3);
-            border-radius: 4px;
-            transition: all 0.3s;
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
-        .mini-bar:hover {
-            background: rgba(102, 126, 234, 0.8);
-            transform: scaleY(1.1);
+        .message.user {
+            justify-content: flex-end;
         }
 
-        /* Notifications */
-        .notification {
+        .message-content {
+            max-width: 70%;
+            padding: 12px 18px;
+            border-radius: 15px;
+            position: relative;
+        }
+
+        .message.user .message-content {
+            background: rgba(0, 212, 255, 0.15);
+            border: 1px solid rgba(0, 212, 255, 0.3);
+        }
+
+        .message.lumi .message-content {
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.2), rgba(168, 85, 247, 0.2));
+            border: 1px solid rgba(168, 85, 247, 0.3);
+        }
+
+        .message-time {
+            font-size: 11px;
+            color: var(--text-dim);
+            margin-top: 5px;
+        }
+
+        /* Panels (for Music, Browser, Camera) */
+        .panel {
             position: fixed;
-            top: 30px;
             right: 30px;
-            padding: 15px 25px;
-            background: rgba(30, 30, 50, 0.95);
-            border-radius: 12px;
-            border-left: 3px solid #667eea;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
-            transform: translateX(400px);
-            transition: transform 0.3s;
-            z-index: 1000;
-            max-width: 350px;
+            bottom: 30px;
+            width: 350px;
+            background: var(--glass-bg);
+            border: 1px solid var(--border-soft);
+            border-radius: 20px;
+            padding: 20px;
+            backdrop-filter: blur(20px);
+            transform: translateY(500px);
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 200;
         }
 
-        .notification.show {
-            transform: translateX(0);
+        .panel.active {
+            transform: translateY(0);
         }
 
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .panel-title {
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            color: var(--text-dim);
+            cursor: pointer;
+            font-size: 20px;
+        }
+
+        /* Camera Panel */
+        #cameraVideo {
+            width: 100%;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+
+        .detection-result {
+            padding: 12px;
+            background: rgba(0, 212, 255, 0.1);
+            border-radius: 10px;
+            border-left: 3px solid var(--orb-cyan);
+        }
+
+        /* Hidden Elements */
         canvas {
             display: none;
+        }
+
+        /* Scrollbar Styling */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(0, 212, 255, 0.3);
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(0, 212, 255, 0.5);
         }
     </style>
 </head>
@@ -437,279 +552,484 @@
 <body>
     <!-- Sidebar -->
     <div class="sidebar">
-        <div class="logo" title="LUMI AI">⚡</div>
-        <div class="nav-item active" title="Dashboard">📊</div>
-        <div class="nav-item" title="Camera Vision">📹</div>
-        <div class="nav-item" title="Voice Commands">🎤</div>
-        <div class="nav-item" title="Analytics">📈</div>
-        <div class="nav-item" title="Settings">⚙️</div>
+        <div class="logo" title="LUMI">💙</div>
+        <div class="nav-item active" data-view="home">
+            <div>🏠</div>
+            <span>Home</span>
+        </div>
+        <div class="nav-item" data-view="conversations">
+            <div>💬</div>
+            <span>Chats</span>
+        </div>
+        <div class="nav-item" data-view="music">
+            <div>🎵</div>
+            <span>Music</span>
+        </div>
+        <div class="nav-item" data-view="vision">
+            <div>👁</div>
+            <span>Vision</span>
+        </div>
+        <div class="nav-item" data-view="analytics">
+            <div>📊</div>
+            <span>Stats</span>
+        </div>
+        <div class="nav-item" data-view="settings">
+            <div>⚙</div>
+            <span>Settings</span>
+        </div>
     </div>
 
     <!-- Main Content -->
     <div class="main">
         <div class="header">
-            <h1>LUMI AI Control Center</h1>
-            <div class="user-info">
+            <h1>LUMI - Your AI Companion</h1>
+            <div class="user-controls">
                 <button class="icon-btn" title="Notifications">🔔</button>
-                <button class="icon-btn" title="Messages">💬</button>
                 <button class="icon-btn" title="Profile">👤</button>
             </div>
         </div>
 
-        <div class="dashboard-grid">
-            <!-- Camera Panel -->
-            <div class="card camera-panel">
-                <div class="camera-header">
-                    <div class="camera-title">
-                        <span>AI Vision Camera</span>
-                        <div class="status-dot" id="cameraStatus"></div>
-                    </div>
-                </div>
+        <!-- LUMI Core Zone -->
+        <div class="lumi-zone">
+            <div class="status-text" id="statusText">Hi there... I'm here with you 💙</div>
 
-                <video id="videoFeed" autoplay playsinline></video>
-                <canvas id="canvas"></canvas>
-
-                <div class="camera-controls">
-                    <button class="camera-btn" onclick="startCamera()">Start Camera</button>
-                    <button class="camera-btn secondary" onclick="analyzeFrame()">Analyze Object</button>
-                </div>
-
-                <div class="vision-result" id="visionResult">
-                    <span>🔍</span>
-                    <div class="vision-result-text" id="visionText">
-                        Point camera at an object and click "Analyze Object"
-                    </div>
-                </div>
+            <div class="orb-container">
+                <div class="orb" id="lumiOrb"></div>
             </div>
 
-            <!-- Voice Control Panel -->
-            <div class="card voice-panel" id="voicePanel">
-                <h3 style="margin-bottom: 10px;">Voice Control</h3>
-                <p style="color: #6b7280; font-size: 14px; margin-bottom: 20px;">
-                    Speak naturally to control LUMI
-                </p>
-
-                <div class="orb-container">
-                    <div class="orb"></div>
-                </div>
-
-                <button class="voice-btn" onclick="toggleVoice()">Activate Voice</button>
-                <div class="voice-status" id="voiceStatus">Ready to listen</div>
+            <div class="waveform" id="waveform">
+                <div class="wave-bar"></div>
+                <div class="wave-bar"></div>
+                <div class="wave-bar"></div>
+                <div class="wave-bar"></div>
+                <div class="wave-bar"></div>
             </div>
 
-            <!-- Stats Cards -->
-            <div class="card stat-card" onclick="showNotification('Total Requests: 90,744 today')">
-                <div class="stat-label">Total Requests</div>
-                <div class="stat-value">90,744</div>
-                <div class="mini-chart">
-                    <div class="mini-bar" style="height: 40%"></div>
-                    <div class="mini-bar" style="height: 65%"></div>
-                    <div class="mini-bar" style="height: 50%"></div>
-                    <div class="mini-bar" style="height: 85%"></div>
-                    <div class="mini-bar" style="height: 100%"></div>
-                    <div class="mini-bar" style="height: 70%"></div>
-                </div>
-            </div>
+            <div class="latency-display" id="latencyDisplay">Ready to listen</div>
 
-            <div class="card stat-card" onclick="showNotification('Response Time: 24ms (Excellent)')">
-                <div class="stat-label">Response Time</div>
-                <div class="stat-value">24ms</div>
-                <p style="color: #10b981; margin-top: 10px;">↑ 15% faster than average</p>
-            </div>
+            <button class="activate-btn" id="activateBtn">Activate LUMI</button>
+        </div>
 
-            <div class="card stat-card" onclick="showNotification('Active Users: 2,847 online now')">
-                <div class="stat-label">Active Users</div>
-                <div class="stat-value">2,847</div>
-                <p style="color: #6b7280; margin-top: 10px;">Real-time monitoring</p>
-            </div>
-
-            <div class="card stat-card" onclick="showNotification('System Health: All systems operational')">
-                <div class="stat-label">System Health</div>
-                <div class="stat-value">98%</div>
-                <div
-                    style="margin-top: 15px; height: 8px; background: rgba(102, 126, 234, 0.2); border-radius: 4px; overflow: hidden;">
-                    <div
-                        style="width: 98%; height: 100%; background: linear-gradient(90deg, #667eea, #10b981); transition: width 0.5s;">
-                    </div>
+        <!-- Chat Timeline -->
+        <div class="chat-timeline" id="chatTimeline">
+            <div class="message lumi">
+                <div class="message-content">
+                    <div>Welcome! I'm LUMI, your AI companion. I'm here to help with anything you need 💙</div>
+                    <div class="message-time">Just now</div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Notification Toast -->
-    <div class="notification" id="notification">
-        <div id="notificationText"></div>
+    <!-- Camera Panel -->
+    <div class="panel" id="cameraPanel">
+        <div class="panel-header">
+            <div class="panel-title">AI Vision 👁</div>
+            <button class="close-btn" onclick="closePanel('cameraPanel')">✕</button>
+        </div>
+        <video id="cameraVideo" autoplay playsinline></video>
+        <canvas id="canvas"></canvas>
+        <div class="detection-result" id="detectionResult">
+            Point camera at an object to detect
+        </div>
     </div>
 
     <script>
-        // Voice Recognition
+        // ==================== LUMI CORE ENGINE ====================
+
         let recognition;
         let isListening = false;
+        let cocoModel;
+        let cameraStream;
+        let currentLanguage = 'en-US';
 
-        function toggleVoice() {
-            if (!recognition) initVoice();
+        const lumiOrb = document.getElementById('lumiOrb');
+        const statusText = document.getElementById('statusText');
+        const latencyDisplay = document.getElementById('latencyDisplay');
+        const waveform = document.getElementById('waveform');
+        const chatTimeline = document.getElementById('chatTimeline');
+        const activateBtn = document.getElementById('activateBtn');
 
-            if (isListening) {
-                recognition.stop();
-                isListening = false;
-            } else {
-                try {
-                    recognition.start();
-                } catch (e) {
-                    console.log('Recognition already started');
-                }
-            }
-        }
+        // ==================== EMOTIONAL PERSONALITY ====================
+
+        const lumiPersonality = {
+            greetings: [
+                "Hi there... I'm here with you 💙",
+                "Hello! I'm so glad you're here 💙",
+                "Hey! How can I help you today? 💙"
+            ],
+            confirmations: [
+                "Of course... I'll do that for you 💙",
+                "Sure thing! Let me help with that 💙",
+                "I've got this 💙"
+            ],
+            errors: [
+                "I'm having a little trouble right now, but I'm still here 💙",
+                "Give me a moment... I'm working on it 💙",
+                "I couldn't quite get that, but let's try again 💙"
+            ]
+        };
+
+        // ==================== VOICE SYSTEM ====================
 
         function initVoice() {
             if (!('webkitSpeechRecognition' in window)) {
-                showNotification('❌ Voice not supported. Please use Chrome browser.');
+                speak(lumiPersonality.errors[0]);
+                updateStatus("Voice needs Chrome browser");
                 return;
             }
 
             recognition = new webkitSpeechRecognition();
             recognition.continuous = true;
             recognition.interimResults = true;
-            recognition.lang = 'en-US';
+            recognition.lang = currentLanguage;
 
             recognition.onstart = () => {
                 isListening = true;
-                document.getElementById('voicePanel').classList.add('listening');
-                document.querySelector('.voice-btn').textContent = 'Listening...';
-                document.getElementById('voiceStatus').textContent = '🎤 Listening for commands...';
-                speak('I am listening');
+                setOrbState('listening');
+                waveform.classList.add('active');
+                updateStatus("I'm listening...");
+                updateLatency("Listening...", true);
+                activateBtn.textContent = "Listening...";
             };
 
             recognition.onend = () => {
                 isListening = false;
-                document.getElementById('voicePanel').classList.remove('listening');
-                document.querySelector('.voice-btn').textContent = 'Activate Voice';
-                document.getElementById('voiceStatus').textContent = 'Ready to listen';
+                setOrbState('idle');
+                waveform.classList.remove('active');
+                updateStatus("Tap below to talk to me");
+                updateLatency("Ready to listen", false);
+                activateBtn.textContent = "Activate LUMI";
             };
 
             recognition.onresult = (event) => {
                 const result = event.results[event.results.length - 1];
+
                 if (result.isFinal) {
-                    const text = result[0].transcript;
-                    console.log('✅ Heard:', text);
-                    document.getElementById('voiceStatus').textContent = '💬 You said: ' + text;
-                    handleCommand(text);
+                    const text = result[0].transcript.trim();
+                    console.log('✅ User said:', text);
+
+                    // Add to chat immediately
+                    addMessage('user', text);
+
+                    // Process command
+                    processCommand(text);
                 }
             };
 
             recognition.onerror = (event) => {
                 console.error('Voice error:', event.error);
-                showNotification('⚠️ Voice error: ' + event.error);
-                isListening = false;
+                setOrbState('error');
+                speak(lumiPersonality.errors[Math.floor(Math.random() * lumiPersonality.errors.length)]);
             };
         }
 
-        function handleCommand(text) {
+        function toggleVoice() {
+            if (!recognition) initVoice();
+
+            if (isListening) {
+                recognition.stop();
+            } else {
+                try {
+                    recognition.start();
+                    speak(lumiPersonality.greetings[Math.floor(Math.random() * lumiPersonality.greetings.length)]);
+                } catch (e) {
+                    console.log('Recognition already started');
+                }
+            }
+        }
+
+        // ==================== COMMAND PROCESSING ====================
+
+        async function processCommand(text) {
+            const startTime = Date.now();
+
+            setOrbState('thinking');
+            updateStatus("Let me think about that...");
+            updateLatency("Processing...", true);
+
             text = text.toLowerCase();
             let response = '';
+            let action = '';
 
-            if (text.includes('hello') || text.includes('hi')) {
-                response = 'Hello! All systems are operational and ready.';
-            } else if (text.includes('status') || text.includes('how are you')) {
-                response = 'System health is at 98 percent. All modules are functional and response time is excellent at 24 milliseconds.';
-            } else if (text.includes('time')) {
-                response = 'The current time is ' + new Date().toLocaleTimeString();
-            } else if (text.includes('camera') || text.includes('vision')) {
-                response = 'Camera and vision systems are active. You can show me any object for analysis.';
-                startCamera();
-            } else if (text.includes('analyze') || text.includes('what is this')) {
-                response = 'Analyzing the object in camera view now.';
-                analyzeFrame();
-            } else {
-                response = 'I heard: ' + text + '. Processing your request.';
+            // Music Commands
+            if (text.includes('play') && (text.includes('music') || text.includes('song') || text.includes('relaxing') || text.includes('romantic') || text.includes('lo-fi'))) {
+                const query = text.replace(/play|music|song|some/gi, '').trim() || 'relaxing music';
+                action = 'music';
+                response = `Of course... I'll play ${query} for you 💙`;
+                openYouTube(query);
+            }
+            // YouTube Command
+            else if (text.includes('open youtube') || text.includes('youtube')) {
+                action = 'browser';
+                response = "Opening YouTube for you 💙";
+                window.open('https://youtube.com', '_blank');
+            }
+            // Browser Commands
+            else if (text.includes('open') && (text.includes('instagram') || text.includes('github') || text.includes('google') || text.includes('website'))) {
+                action = 'browser';
+                const site = extractSite(text);
+                response = `Opening ${site} for you 💙`;
+                openSite(site);
+            }
+            // Search Google
+            else if (text.includes('search') || text.includes('google')) {
+                action = 'browser';
+                const query = text.replace(/search|google|for/gi, '').trim();
+                response = `Searching Google for ${query} 💙`;
+                window.open(`https://google.com/search?q=${encodeURIComponent(query)}`, '_blank');
+            }
+            // Camera/Vision
+            else if (text.includes('camera') || text.includes('vision') || text.includes('what is this') || text.includes('analyze')) {
+                action = 'vision';
+                response = "Let me take a look... 👁";
+                activateCamera();
+            }
+            // Language Switch
+            else if (text.includes('hindi') || text.includes('हिंदी')) {
+                action = 'settings';
+                currentLanguage = 'hi-IN';
+                response = "बिल्कुल, मैं हिंदी में बात करूंगी 💙";
+                if (recognition) recognition.lang = currentLanguage;
+            }
+            else if (text.includes('english')) {
+                action = 'settings';
+                currentLanguage = 'en-US';
+                response = "Sure, switching to English 💙";
+                if (recognition) recognition.lang = currentLanguage;
+            }
+            // General Chat
+            else if (text.includes('hello') || text.includes('hi')) {
+                action = 'chat';
+                response = lumiPersonality.greetings[Math.floor(Math.random() * lumiPersonality.greetings.length)];
+            }
+            else if (text.includes('how are you') || text.includes('status')) {
+                action = 'chat';
+                response = "I'm doing great! All systems are running smoothly. How can I help you? 💙";
+            }
+            else if (text.includes('time')) {
+                action = 'chat';
+                response = `The current time is ${new Date().toLocaleTimeString()} 💙`;
+            }
+            else {
+                action = 'chat';
+                response = `I heard: "${text}". I'm here to help with music, browsing, camera vision, and more 💙`;
             }
 
-            speak(response);
-            showNotification('🤖 LUMI: ' + response);
+            // Calculate latency
+            const latency = ((Date.now() - startTime) / 1000).toFixed(1);
+            updateLatency(`Processed in ${latency}s`, true);
+
+            // Wait a bit for effect
+            await new Promise(resolve => setTimeout(resolve, 500));
+
+            // Respond
+            setOrbState('responding');
+            updateStatus("Responding...");
+            await speak(response);
+
+            // Store conversation
+            addMessage('lumi', response);
+            storeConversation(text, response, action);
+
+            // Return to idle
+            setTimeout(() => {
+                setOrbState('idle');
+                updateStatus("I'm here with you 💙");
+                updateLatency("Ready to listen", false);
+            }, 1500);
         }
+
+        // ==================== VOICE OUTPUT ====================
 
         function speak(text) {
-            const utterance = new SpeechSynthesisUtterance(text);
-            utterance.rate = 1.0;
-            utterance.pitch = 1.0;
-            window.speechSynthesis.speak(utterance);
+            return new Promise((resolve) => {
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.rate = 0.9; // Slightly slower for calm tone
+                utterance.pitch = 1.1; // Slightly higher for female voice
+                utterance.lang = currentLanguage;
+
+                // Try to use a female voice
+                const voices = speechSynthesis.getVoices();
+                const femaleVoice = voices.find(v =>
+                    v.name.includes('Female') ||
+                    v.name.includes('Google') ||
+                    v.name.includes('Samantha') ||
+                    v.name.includes('Zira')
+                );
+                if (femaleVoice) utterance.voice = femaleVoice;
+
+                utterance.onend = resolve;
+                window.speechSynthesis.speak(utterance);
+            });
         }
 
-        // Camera Functions
-        let stream = null;
+        // ==================== MUSIC & YOUTUBE ====================
 
-        async function startCamera() {
+        function openYouTube(query) {
+            const url = `https://www.youtube.com/results?search_query=${encodeURIComponent(query + ' music')}`;
+            window.open(url, '_blank');
+        }
+
+        // ==================== BROWSER CONTROL ====================
+
+        function extractSite(text) {
+            if (text.includes('instagram')) return 'Instagram';
+            if (text.includes('github')) return 'GitHub';
+            if (text.includes('google')) return 'Google';
+            return 'website';
+        }
+
+        function openSite(site) {
+            const urls = {
+                'Instagram': 'https://instagram.com',
+                'GitHub': 'https://github.com',
+                'Google': 'https://google.com'
+            };
+            window.open(urls[site] || 'https://google.com', '_blank');
+        }
+
+        // ==================== CAMERA & VISION ====================
+
+        async function activateCamera() {
             try {
-                stream = await navigator.mediaDevices.getUserMedia({
-                    video: { facingMode: 'environment', width: 640, height: 480 }
-                });
-                document.getElementById('videoFeed').srcObject = stream;
-                document.getElementById('cameraStatus').style.background = '#10b981';
-                showNotification('✅ Camera activated');
-                speak('Camera is now active');
+                cameraStream = await navigator.mediaDevices.getUserMedia({ video: true });
+                document.getElementById('cameraVideo').srcObject = cameraStream;
+                document.getElementById('cameraPanel').classList.add('active');
+
+                // Load TensorFlow model if not loaded
+                if (!cocoModel) {
+                    updateStatus("Loading vision AI...");
+                    cocoModel = await cocoSsd.load();
+                }
+
+                // Start detection
+                detectObjects();
             } catch (error) {
                 console.error('Camera error:', error);
-                showNotification('❌ Camera access denied. Please allow camera permission.');
-                speak('Camera access was denied');
+                speak("I couldn't access the camera. Please allow camera permission 💙");
             }
         }
 
-        function analyzeFrame() {
-            const video = document.getElementById('videoFeed');
-            const canvas = document.getElementById('canvas');
+        async function detectObjects() {
+            if (!cocoModel || !cameraStream) return;
 
-            if (!stream) {
-                showNotification('⚠️ Please start the camera first');
-                speak('Please start the camera first');
-                return;
+            const video = document.getElementById('cameraVideo');
+            const predictions = await cocoModel.detect(video);
+
+            if (predictions.length > 0) {
+                const detected = predictions[0];
+                const confidence = (detected.score * 100).toFixed(1);
+                const resultText = `✅ Detected: ${detected.class} (Confidence: ${confidence}%)`;
+
+                document.getElementById('detectionResult').textContent = resultText;
+                speak(`This is a ${detected.class}`);
+
+                // Add to chat
+                addMessage('lumi', `I see a ${detected.class} (${confidence}% confident)`);
+            } else {
+                document.getElementById('detectionResult').textContent = "I'm not sure what this is. Could you adjust the angle? 💙";
             }
 
-            canvas.width = video.videoWidth;
-            canvas.height = video.videoHeight;
-            const ctx = canvas.getContext('2d');
-            ctx.drawImage(video, 0, 0);
-
-            // Simulated AI Vision Analysis
-            const objects = [
-                'Calculator', 'Phone', 'Laptop', 'Book', 'Cup', 'Pen',
-                'Mouse', 'Keyboard', 'Notebook', 'Water Bottle'
-            ];
-            const detected = objects[Math.floor(Math.random() * objects.length)];
-
-            const resultText = `✅ Detected: ${detected}`;
-            document.getElementById('visionText').textContent = resultText;
-
-            speak(`This is a ${detected}`);
-            showNotification(`🔍 AI Vision: ${detected} detected`);
+            // Continue detecting
+            setTimeout(detectObjects, 2000);
         }
 
-        // Notification System
-        function showNotification(text) {
-            const notif = document.getElementById('notification');
-            document.getElementById('notificationText').textContent = text;
-            notif.classList.add('show');
-
-            setTimeout(() => {
-                notif.classList.remove('show');
-            }, 4000);
+        function closePanel(panelId) {
+            document.getElementById(panelId).classList.remove('active');
+            if (cameraStream) {
+                cameraStream.getTracks().forEach(track => track.stop());
+                cameraStream = null;
+            }
         }
 
-        // Initialize on load
+        // ==================== UI HELPERS ====================
+
+        function setOrbState(state) {
+            lumiOrb.className = 'orb ' + state;
+        }
+
+        function updateStatus(text) {
+            statusText.textContent = text;
+        }
+
+        function updateLatency(text, show) {
+            latencyDisplay.textContent = text;
+            if (show) {
+                latencyDisplay.classList.add('active');
+            } else {
+                latencyDisplay.classList.remove('active');
+            }
+        }
+
+        function addMessage(sender, text) {
+            const message = document.createElement('div');
+            message.className = `message ${sender}`;
+            message.innerHTML = `
+                <div class="message-content">
+                    <div>${text}</div>
+                    <div class="message-time">${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
+                </div>
+            `;
+            chatTimeline.appendChild(message);
+            chatTimeline.scrollTop = chatTimeline.scrollHeight;
+        }
+
+        // ==================== CONVERSATION STORAGE ====================
+
+        function storeConversation(userText, lumiText, taskType) {
+            const conversations = JSON.parse(localStorage.getItem('lumiConversations') || '[]');
+            conversations.push({
+                id: Date.now(),
+                user: userText,
+                lumi: lumiText,
+                timestamp: new Date().toISOString(),
+                language: currentLanguage,
+                taskType: taskType
+            });
+            localStorage.setItem('lumiConversations', JSON.stringify(conversations));
+        }
+
+        // ==================== EVENT LISTENERS ====================
+
+        activateBtn.addEventListener('click', toggleVoice);
+
+        // Sidebar navigation
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', () => {
+                document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+                item.classList.add('active');
+
+                const view = item.dataset.view;
+                if (view === 'vision') {
+                    activateCamera();
+                } else if (view === 'conversations') {
+                    loadConversations();
+                }
+            });
+        });
+
+        function loadConversations() {
+            const conversations = JSON.parse(localStorage.getItem('lumiConversations') || '[]');
+            chatTimeline.innerHTML = '';
+            conversations.forEach(conv => {
+                addMessage('user', conv.user);
+                addMessage('lumi', conv.lumi);
+            });
+        }
+
+        // ==================== INITIALIZATION ====================
+
         window.addEventListener('load', () => {
-            console.log('🚀 LUMI AI Dashboard Loaded');
+            console.log('💙 LUMI AI Companion Loaded');
 
-            // Check capabilities
-            if ('speechSynthesis' in window && 'webkitSpeechRecognition' in window) {
-                console.log('✅ Voice features available');
-            } else {
-                showNotification('⚠️ Voice features require Chrome browser');
-            }
+            // Load voices
+            speechSynthesis.getVoices();
 
-            if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-                console.log('✅ Camera access available');
-            } else {
-                showNotification('⚠️ Camera requires HTTPS or localhost');
-            }
+            // Greet user
+            setTimeout(() => {
+                speak(lumiPersonality.greetings[0]);
+            }, 1000);
         });
     </script>
 </body>
