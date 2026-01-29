@@ -7,17 +7,16 @@
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LUMI AI Control Center</title>
+    <title>LUMI AI Control Center 💙</title>
 
     <!-- AI Libraries -->
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd"></script>
-    <!-- Chart.js for Real Graphs -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <style>
         :root {
-            --bg-deep: linear-gradient(135deg, #050a14 0%, #0f172a 100%);
+            --bg-deep: linear-gradient(135deg, #050a14 0%, #0f172a 50%, #1a1f35 100%);
             --card-glass: rgba(20, 30, 50, 0.6);
             --card-border: 1px solid rgba(255, 255, 255, 0.08);
             --neon-cyan: #00f2ff;
@@ -42,10 +41,10 @@
             overflow: hidden;
         }
 
-        /* --- SIDEBAR --- */
+        /* SIDEBAR */
         .sidebar {
             width: 70px;
-            background: rgba(5, 10, 20, 0.9);
+            background: rgba(5, 10, 20, 0.95);
             border-right: var(--card-border);
             display: flex;
             flex-direction: column;
@@ -64,7 +63,13 @@
             justify-content: center;
             font-weight: bold;
             margin-bottom: 40px;
-            box-shadow: 0 0 15px rgba(0, 242, 255, 0.3);
+            box-shadow: 0 0 20px rgba(0, 242, 255, 0.4);
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+
+        .logo:hover {
+            transform: scale(1.1);
         }
 
         .nav-icon {
@@ -84,7 +89,7 @@
 
         .nav-icon:hover,
         .nav-icon.active {
-            background: rgba(0, 242, 255, 0.1);
+            background: rgba(0, 242, 255, 0.15);
             color: var(--neon-cyan);
             transform: translateX(3px);
         }
@@ -99,15 +104,13 @@
             border-radius: 0 4px 4px 0;
         }
 
-        /* --- MAIN DASHBOARD GRID --- */
+        /* MAIN DASHBOARD GRID */
         .dashboard {
             flex: 1;
             padding: 20px;
             display: grid;
             grid-template-columns: 1fr 1.2fr 1fr;
-            /* Left, Center (slightly wider), Right */
             grid-template-rows: 1.2fr 1fr;
-            /* Top taller than bottom */
             gap: 20px;
             height: 100vh;
         }
@@ -116,19 +119,20 @@
             background: var(--card-glass);
             border: var(--card-border);
             border-radius: 20px;
-            backdrop-filter: blur(12px);
+            backdrop-filter: blur(15px);
             padding: 20px;
             display: flex;
             flex-direction: column;
             position: relative;
             overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-            transition: transform 0.3s;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s;
         }
 
         .card:hover {
-            border-color: rgba(255, 255, 255, 0.15);
+            border-color: rgba(0, 242, 255, 0.2);
             transform: translateY(-2px);
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.4);
         }
 
         .card-header {
@@ -136,14 +140,14 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 15px;
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 600;
             color: var(--neon-cyan);
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 1.2px;
         }
 
-        /* --- CARD 1 (Top Left): CAMERA VISION --- */
+        /* CARD 1: CAMERA VISION */
         #cam-container {
             flex: 1;
             background: #000;
@@ -165,51 +169,59 @@
             right: 15px;
             display: flex;
             justify-content: space-between;
+            gap: 10px;
         }
 
         .btn-sm {
-            padding: 8px 16px;
-            background: rgba(0, 0, 0, 0.6);
+            padding: 10px 18px;
+            background: rgba(0, 0, 0, 0.7);
             border: 1px solid var(--neon-cyan);
             color: var(--neon-cyan);
             border-radius: 20px;
             font-size: 12px;
+            font-weight: 600;
             cursor: pointer;
             transition: all 0.3s;
+            backdrop-filter: blur(10px);
         }
 
         .btn-sm:hover {
             background: var(--neon-cyan);
             color: #000;
+            transform: translateY(-2px);
         }
 
-        /* --- CARD 2 (Top Center): LUMI ORB --- */
+        /* CARD 2: LUMI ORB */
         .lumi-core {
             align-items: center;
             justify-content: center;
             text-align: center;
-            background: radial-gradient(circle at center, rgba(188, 19, 254, 0.1) 0%, rgba(20, 30, 50, 0) 70%);
+            background: radial-gradient(circle at center, rgba(188, 19, 254, 0.15) 0%, rgba(20, 30, 50, 0) 70%);
         }
 
         .orb-wrapper {
             position: relative;
-            width: 220px;
-            height: 220px;
+            width: 240px;
+            height: 240px;
             margin-bottom: 20px;
         }
 
         .orb {
-            width: 180px;
-            height: 180px;
+            width: 200px;
+            height: 200px;
             border-radius: 50%;
             background: radial-gradient(circle at 30% 30%, var(--neon-cyan), var(--neon-violet));
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            box-shadow: 0 0 50px var(--neon-violet);
+            box-shadow:
+                0 0 60px rgba(188, 19, 254, 0.6),
+                0 0 100px rgba(0, 242, 255, 0.3),
+                inset 0 0 60px rgba(255, 255, 255, 0.1);
             animation: breathe 5s infinite ease-in-out;
             z-index: 10;
+            cursor: pointer;
         }
 
         .orb-ring {
@@ -217,31 +229,49 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 210px;
-            height: 210px;
-            border: 1px solid rgba(0, 242, 255, 0.3);
+            width: 230px;
+            height: 230px;
+            border: 2px solid rgba(0, 242, 255, 0.3);
             border-radius: 50%;
-            animation: spin 15s linear infinite;
+            animation: spin 20s linear infinite;
         }
 
         .orb.listening {
-            animation: pulseFast 0.5s infinite alternate;
-            box-shadow: 0 0 80px var(--neon-cyan);
+            animation: pulseFast 0.4s infinite alternate;
+            box-shadow:
+                0 0 100px rgba(0, 242, 255, 0.9),
+                0 0 150px rgba(188, 19, 254, 0.5);
+        }
+
+        .orb.thinking {
+            animation: shimmer 3s infinite;
+            box-shadow:
+                0 0 80px rgba(188, 19, 254, 0.8),
+                0 0 120px rgba(0, 242, 255, 0.4);
+        }
+
+        .orb.speaking {
+            animation: expand 2s infinite;
+            box-shadow:
+                0 0 120px rgba(188, 19, 254, 1),
+                0 0 180px rgba(0, 242, 255, 0.6);
         }
 
         .orb-status {
-            font-size: 16px;
+            font-size: 15px;
             color: var(--text-secondary);
             margin-top: 10px;
             height: 24px;
+            font-weight: 500;
         }
 
-        /* Waveform Animation */
+        /* Waveform */
         .waveform {
             display: flex;
-            gap: 4px;
-            height: 30px;
+            gap: 5px;
+            height: 40px;
             align-items: center;
+            justify-content: center;
             margin-top: 15px;
             opacity: 0;
             transition: opacity 0.3s;
@@ -253,44 +283,59 @@
 
         .bar {
             width: 4px;
-            background: var(--neon-cyan);
+            background: linear-gradient(to top, var(--neon-cyan), var(--neon-violet));
             border-radius: 2px;
             height: 10px;
             animation: wave 0.5s infinite ease-in-out;
         }
 
-        @keyframes wave {
-
-            0%,
-            100% {
-                height: 10px
-            }
-
-            50% {
-                height: 25px
-            }
+        .bar:nth-child(1) {
+            animation-delay: 0s;
         }
 
-        /* --- CARD 3 (Top Right): LATENCY GRAPHS --- */
+        .bar:nth-child(2) {
+            animation-delay: 0.1s;
+        }
+
+        .bar:nth-child(3) {
+            animation-delay: 0.2s;
+        }
+
+        .bar:nth-child(4) {
+            animation-delay: 0.3s;
+        }
+
+        .bar:nth-child(5) {
+            animation-delay: 0.4s;
+        }
+
+        /* CARD 3: LATENCY */
         .latency-chart-container {
             flex: 1;
             width: 100%;
             position: relative;
         }
 
-        /* --- CARD 4 (Bottom Left): VISION DETAILS --- */
+        /* CARD 4: VISION DETAILS */
         .vision-details {
             display: flex;
             flex-direction: column;
-            gap: 15px;
+            gap: 12px;
         }
 
         .detail-row {
             display: flex;
             justify-content: space-between;
             background: rgba(255, 255, 255, 0.03);
-            padding: 12px;
-            border-radius: 8px;
+            padding: 14px;
+            border-radius: 10px;
+            border-left: 3px solid rgba(0, 242, 255, 0.3);
+            transition: all 0.3s;
+        }
+
+        .detail-row:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-left-color: var(--neon-cyan);
         }
 
         .detail-label {
@@ -301,9 +346,10 @@
         .detail-value {
             color: var(--neon-cyan);
             font-weight: bold;
+            font-size: 14px;
         }
 
-        /* --- CARD 5 (Bottom Center): CONVERSATION --- */
+        /* CARD 5: CONVERSATION */
         .chat-container {
             flex: 1;
             overflow-y: auto;
@@ -316,64 +362,72 @@
         .msg {
             max-width: 85%;
             padding: 12px 16px;
-            border-radius: 12px;
+            border-radius: 15px;
             font-size: 14px;
-            line-height: 1.4;
-            animation: fadeIn 0.3s ease-up;
+            line-height: 1.5;
+            animation: fadeIn 0.3s ease-out;
         }
 
         .msg.user {
             align-self: flex-end;
-            background: rgba(0, 242, 255, 0.1);
+            background: rgba(0, 242, 255, 0.12);
             border: 1px solid rgba(0, 242, 255, 0.3);
             color: #fff;
         }
 
         .msg.lumi {
             align-self: flex-start;
-            background: rgba(188, 19, 254, 0.1);
+            background: rgba(188, 19, 254, 0.12);
             border: 1px solid rgba(188, 19, 254, 0.3);
             color: #fff;
         }
 
         .msg-time {
             font-size: 10px;
-            opacity: 0.6;
+            opacity: 0.5;
             margin-top: 4px;
             display: block;
             text-align: right;
         }
 
-        /* --- CARD 6 (Bottom Right): SYSTEM HEALTH --- */
+        /* CARD 6: SYSTEM HEALTH */
         .stat-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 15px;
+            gap: 12px;
             height: 100%;
         }
 
         .stat-box {
             background: rgba(255, 255, 255, 0.03);
             border-radius: 12px;
-            padding: 15px;
+            padding: 16px;
             display: flex;
             flex-direction: column;
             justify-content: center;
+            transition: all 0.3s;
+        }
+
+        .stat-box:hover {
+            background: rgba(255, 255, 255, 0.06);
+            transform: translateY(-2px);
         }
 
         .stat-num {
-            font-size: 24px;
+            font-size: 26px;
             font-weight: bold;
             color: #fff;
-            margin-bottom: 4px;
+            margin-bottom: 6px;
         }
 
         .stat-desc {
-            font-size: 12px;
+            font-size: 11px;
             color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
-        /* MICRO-ANIMATIONS */
+        /* ANIMATIONS */
         @keyframes breathe {
 
             0%,
@@ -396,9 +450,43 @@
             }
         }
 
+        @keyframes shimmer {
+            0% {
+                transform: translate(-50%, -50%) rotate(0deg)
+            }
+
+            100% {
+                transform: translate(-50%, -50%) rotate(360deg)
+            }
+        }
+
+        @keyframes expand {
+
+            0%,
+            100% {
+                transform: translate(-50%, -50%) scale(1)
+            }
+
+            50% {
+                transform: translate(-50%, -50%) scale(1.12)
+            }
+        }
+
         @keyframes spin {
             100% {
                 transform: translate(-50%, -50%) rotate(360deg)
+            }
+        }
+
+        @keyframes wave {
+
+            0%,
+            100% {
+                height: 10px
+            }
+
+            50% {
+                height: 35px
             }
         }
 
@@ -413,6 +501,24 @@
                 transform: translateY(0)
             }
         }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(0, 242, 255, 0.3);
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(0, 242, 255, 0.5);
+        }
     </style>
 </head>
 
@@ -420,7 +526,7 @@
 
     <!-- SIDEBAR -->
     <div class="sidebar">
-        <div class="logo">L</div>
+        <div class="logo">💙</div>
         <div class="nav-icon active" title="Dashboard">⊞</div>
         <div class="nav-icon" title="Conversations">💬</div>
         <div class="nav-icon" title="Music">🎵</div>
@@ -431,11 +537,11 @@
     <!-- MAIN DASHBOARD -->
     <div class="dashboard">
 
-        <!-- 1. TOP LEFT: VISION / CAMERA -->
+        <!-- 1. TOP LEFT: VISION -->
         <div class="card">
             <div class="card-header">
                 <span>Vision Uplink</span>
-                <span style="color:var(--text-secondary);font-size:10px">LIVE</span>
+                <span style="color:#10b981;font-size:10px">● READY</span>
             </div>
             <div id="cam-container">
                 <video id="video-feed" autoplay playsinline muted></video>
@@ -453,22 +559,22 @@
                 <div class="orb" id="orb"></div>
             </div>
 
-            <div class="orb-status" id="orb-status">Tap to Activate</div>
+            <div class="orb-status" id="orb-status">Hi! Tap me to talk 💙</div>
 
             <div class="waveform" id="waveform">
-                <div class="bar" style="animation-delay:0s"></div>
-                <div class="bar" style="animation-delay:0.1s"></div>
-                <div class="bar" style="animation-delay:0.2s"></div>
-                <div class="bar" style="animation-delay:0.3s"></div>
-                <div class="bar" style="animation-delay:0.4s"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
             </div>
         </div>
 
-        <!-- 3. TOP RIGHT: LATENCY METRICS -->
+        <!-- 3. TOP RIGHT: LATENCY -->
         <div class="card">
             <div class="card-header">
                 <span>Neural Latency</span>
-                <span id="latency-val">0ms</span>
+                <span id="latency-val" style="color:var(--neon-violet)">0ms</span>
             </div>
             <div class="latency-chart-container">
                 <canvas id="latencyChart"></canvas>
@@ -481,7 +587,7 @@
 
             <div class="detail-row">
                 <span class="detail-label">OBJECT DETECTED</span>
-                <span class="detail-value" id="det-object">--</span>
+                <span class="detail-value" id="det-object">Standby</span>
             </div>
             <div class="detail-row">
                 <span class="detail-label">CONFIDENCE</span>
@@ -492,25 +598,25 @@
                 <span class="detail-value" id="det-emotion">--</span>
             </div>
             <div class="detail-row">
-                <span class="detail-label">BIOMETRIC MATCH</span>
-                <span class="detail-value" id="det-bio">SCANNING..</span>
+                <span class="detail-label">BIOMETRIC</span>
+                <span class="detail-value" id="det-bio">Ready</span>
             </div>
         </div>
 
         <!-- 5. BOTTOM CENTER: CONVERSATION -->
         <div class="card">
-            <div class="card-header">Conversation Log</div>
+            <div class="card-header">Conversation</div>
             <div class="chat-container" id="chat">
                 <div class="msg lumi">
-                    Hello! I'm LUMI. I'm connected and listening. How can I assist you? 💙
+                    Hi there! I'm LUMI, your AI companion. I'm here with you 💙
                     <span class="msg-time">Now</span>
                 </div>
             </div>
         </div>
 
-        <!-- 6. BOTTOM RIGHT: SYSTEM HEALTH -->
+        <!-- 6. BOTTOM RIGHT: SYSTEM -->
         <div class="card">
-            <div class="card-header">System Vitality</div>
+            <div class="card-header">System Status</div>
             <div class="stat-grid">
                 <div class="stat-box">
                     <span class="stat-num" id="stat-req">0</span>
@@ -521,12 +627,12 @@
                     <span class="stat-desc">Uptime</span>
                 </div>
                 <div class="stat-box">
-                    <span class="stat-num">Active</span>
-                    <span class="stat-desc">Voice Module</span>
+                    <span class="stat-num" style="color:#10b981">Active</span>
+                    <span class="stat-desc">Voice Core</span>
                 </div>
                 <div class="stat-box">
-                    <span class="stat-num" style="color:var(--neon-cyan)">Stable</span>
-                    <span class="stat-desc">Vision Core</span>
+                    <span class="stat-num" style="color:var(--neon-cyan)">Ready</span>
+                    <span class="stat-desc">Vision AI</span>
                 </div>
             </div>
         </div>
@@ -534,7 +640,7 @@
     </div>
 
     <script>
-        // --- GLOBAL STATE ---
+        // GLOBAL STATE
         let isListening = false;
         let recognition;
         let model;
@@ -543,48 +649,84 @@
         let chartInstance;
         let requestCount = 0;
 
-        // --- INIT ---
+        // CARING RESPONSES
+        const caringResponses = {
+            greeting: [
+                "Hi there! I'm so happy to talk with you 💙",
+                "Hello! I'm here for you, always 💙",
+                "Hey! How are you feeling today? 💙"
+            ],
+            music: [
+                "Of course! I'll play something nice for you 💙",
+                "Sure thing! Let me find some music you'll love 💙",
+                "I'd love to! Starting music now 💙"
+            ],
+            vision: [
+                "Let me take a look for you 💙",
+                "I'm activating my vision... one moment 💙",
+                "Sure! Let me see what's there 💙"
+            ],
+            general: [
+                "I'm here to help you with anything 💙",
+                "I understand. Let me help you with that 💙",
+                "I've got you. Don't worry 💙"
+            ]
+        };
+
+        function pickRandom(arr) {
+            return arr[Math.floor(Math.random() * arr.length)];
+        }
+
+        // INIT
         window.addEventListener('load', async () => {
             initChart();
-            startClock();
-            // Load vision model silently
             try {
                 model = await cocoSsd.load();
-                console.log("Vision Model Loaded");
-            } catch (e) { console.warn("Vision model failed to load", e); }
+                console.log("✅ Vision AI loaded");
+            } catch (e) { console.warn("Vision loading...", e); }
+
+            // Load voices
+            speechSynthesis.getVoices();
+            setTimeout(() => {
+                speak(pickRandom(caringResponses.greeting));
+            }, 1500);
         });
 
-        // --- 1. VOICE SYSTEM ---
+        // VOICE SYSTEM (IMPROVED)
         function toggleVoice() {
             if (!recognition) setupVoice();
             if (isListening) {
                 recognition.stop();
             } else {
-                recognition.start();
-                updateOrb('listening');
+                try {
+                    recognition.start();
+                } catch (e) {
+                    console.log("Already listening");
+                }
             }
         }
 
         function setupVoice() {
             if (!('webkitSpeechRecognition' in window)) {
-                alert("Use Chrome for Voice Features");
+                alert("Please use Chrome for voice features 💙");
                 return;
             }
             recognition = new webkitSpeechRecognition();
             recognition.continuous = true;
             recognition.interimResults = true;
+            recognition.lang = 'en-US';
 
             recognition.onstart = () => {
                 isListening = true;
                 updateOrb('listening');
-                document.getElementById('orb-status').innerText = "Listening...";
+                document.getElementById('orb-status').innerText = "I'm listening... 💙";
                 document.getElementById('waveform').classList.add('active');
             };
 
             recognition.onend = () => {
                 isListening = false;
                 updateOrb('idle');
-                document.getElementById('orb-status').innerText = "Tap to Resume";
+                document.getElementById('orb-status').innerText = "Tap to talk again 💙";
                 document.getElementById('waveform').classList.remove('active');
             };
 
@@ -594,99 +736,142 @@
                     .map(result => result.transcript)
                     .join('');
 
-                if (event.results[0].isFinal) {
-                    processCommand(transcript);
+                if (event.results[event.results.length - 1].isFinal) {
+                    processCommand(transcript.trim());
                 }
+            };
+
+            recognition.onerror = (e) => {
+                console.error("Voice error:", e.error);
+                speak("I'm having a little trouble hearing you. Let's try again 💙");
             };
         }
 
         async function processCommand(text) {
             addMessage('user', text);
             updateOrb('thinking');
-            document.getElementById('orb-status').innerText = "Processing...";
+            document.getElementById('orb-status').innerText = "Thinking... 💙";
 
             const startT = performance.now();
-            let response = "I heard you.";
+            let response = "";
             let action = null;
 
-            // Logic
             text = text.toLowerCase();
-            if (text.includes('vision') || text.includes('camera') || text.includes('scan')) {
-                response = "Activating vision sensor systems.";
+
+            if (text.includes('hello') || text.includes('hi')) {
+                response = pickRandom(caringResponses.greeting);
+            }
+            else if (text.includes('music') || text.includes('play') || text.includes('song')) {
+                response = pickRandom(caringResponses.music);
+                action = () => window.open(`https://youtube.com/results?search_query=${encodeURIComponent(text)}`, '_blank');
+            }
+            else if (text.includes('vision') || text.includes('camera') || text.includes('scan') || text.includes('see')) {
+                response = pickRandom(caringResponses.vision);
                 action = toggleCamera;
-            } else if (text.includes('music') || text.includes('play')) {
-                response = "Queuing audio playback on YouTube.";
-                action = () => window.open(`https://youtube.com/results?search_query=${text}`, '_blank');
-            } else if (text.includes('hello')) {
-                response = "Greetings. I am ready.";
+            }
+            else if (text.includes('youtube') || text.includes('open')) {
+                response = "Opening that for you now 💙";
+                action = () => window.open('https://youtube.com', '_blank');
+            }
+            else {
+                response = pickRandom(caringResponses.general);
             }
 
-            // Sim processing time
-            await new Promise(r => setTimeout(r, 600));
+            await new Promise(r => setTimeout(r, 500));
 
             const endT = performance.now();
             updateLatency(Math.round(endT - startT));
 
             updateOrb('speaking');
-            speak(response);
+            document.getElementById('orb-status').innerText = "Speaking... 💙";
+            await speak(response);
             addMessage('lumi', response);
 
             if (action) action();
-
             incrementRequests();
+
+            setTimeout(() => {
+                if (isListening) {
+                    updateOrb('listening');
+                    document.getElementById('orb-status').innerText = "I'm listening... 💙";
+                } else {
+                    updateOrb('idle');
+                    document.getElementById('orb-status').innerText = "Tap to talk 💙";
+                }
+            }, 1000);
         }
 
         function speak(text) {
-            const u = new SpeechSynthesisUtterance(text);
-            u.pitch = 1.1; // Female-ish
-            u.rate = 1.0;
-            const voices = speechSynthesis.getVoices();
-            const fVoice = voices.find(v => v.name.includes('Female')) || voices[0];
-            if (fVoice) u.voice = fVoice;
+            return new Promise((resolve) => {
+                const u = new SpeechSynthesisUtterance(text);
+                u.rate = 0.85; // Slower, more caring
+                u.pitch = 1.2; // Higher, more feminine
+                u.volume = 1.0;
+                u.lang = 'en-US';
 
-            u.onend = () => {
-                if (isListening) updateOrb('listening');
-                else updateOrb('idle');
-                document.getElementById('orb-status').innerText = "Listening...";
-            };
+                // Try to find best female voice
+                const voices = speechSynthesis.getVoices();
+                const femaleVoice = voices.find(v =>
+                    v.name.includes('Google UK English Female') ||
+                    v.name.includes('Microsoft Zira') ||
+                    v.name.includes('Samantha') ||
+                    v.name.includes('Female') ||
+                    v.name.includes('Woman')
+                ) || voices.find(v => v.lang.includes('en')) || voices[0];
 
-            window.speechSynthesis.speak(u);
+                if (femaleVoice) {
+                    u.voice = femaleVoice;
+                    console.log("Using voice:", femaleVoice.name);
+                }
+
+                u.onend = resolve;
+                u.onerror = resolve;
+                window.speechSynthesis.speak(u);
+            });
         }
 
-        // --- 2. VISION SYSTEM ---
+        // VISION SYSTEM
         async function toggleCamera() {
             const v = document.getElementById('video-feed');
             if (videoStream) {
-                // Stop
                 videoStream.getTracks().forEach(t => t.stop());
                 videoStream = null;
                 v.srcObject = null;
+                document.getElementById('det-object').innerText = "Standby";
             } else {
-                // Start
                 try {
                     videoStream = await navigator.mediaDevices.getUserMedia({ video: true });
                     v.srcObject = videoStream;
-                    startScanning(); // Auto scan loop
-                } catch (e) { alert("Camera access denied"); }
+                    startScanning();
+                    speak("Camera is active now 💙");
+                } catch (e) {
+                    alert("Camera access needed 💙");
+                }
             }
         }
 
         async function analyzeFrame() {
-            if (!model || !videoStream) return;
+            if (!model || !videoStream) {
+                speak("Please activate the camera first 💙");
+                return;
+            }
+
             const v = document.getElementById('video-feed');
             const preds = await model.detect(v);
 
             if (preds.length > 0) {
                 const best = preds[0];
+                const conf = Math.round(best.score * 100);
                 document.getElementById('det-object').innerText = best.class.toUpperCase();
-                document.getElementById('det-conf').innerText = Math.round(best.score * 100) + "%";
-                document.getElementById('det-emotion').innerText = ["CALM", "FOCUSED", "NEUTRAL"][Math.floor(Math.random() * 3)]; // Sim for now
-                document.getElementById('det-bio').innerText = "MATCHED";
-                document.getElementById('det-bio').style.color = "#00f2ff";
+                document.getElementById('det-conf').innerText = conf + "%";
+                document.getElementById('det-emotion').innerText = ["CALM", "FOCUSED", "HAPPY"][Math.floor(Math.random() * 3)];
+                document.getElementById('det-bio').innerText = "Matched";
 
-                speak(`I see a ${best.class}.`);
+                speak(`I see a ${best.class} 💙`);
+                addMessage('lumi', `I detected a ${best.class} with ${conf}% confidence 💙`);
             } else {
-                document.getElementById('det-object').innerText = "SCANNING";
+                document.getElementById('det-object').innerText = "Scanning...";
+                speak("I'm not sure what that is. Could you adjust the angle? 💙");
             }
         }
 
@@ -697,24 +882,23 @@
             }
         }
 
-        // --- 3. UI UPDATES ---
+        // UI UPDATES
         function updateOrb(state) {
             const o = document.getElementById('orb');
-            o.className = 'orb'; // reset
-            if (state === 'listening') o.classList.add('listening');
-            if (state === 'speaking') o.style.boxShadow = "0 0 100px #bc13fe";
+            o.className = 'orb ' + state;
         }
 
         function addMessage(who, text) {
             const c = document.getElementById('chat');
             const d = document.createElement('div');
             d.className = `msg ${who}`;
-            d.innerHTML = `${text} <span class="msg-time">${new Date().toLocaleTimeString()}</span>`;
+            const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            d.innerHTML = `${text} <span class="msg-time">${time}</span>`;
             c.appendChild(d);
             c.scrollTop = c.scrollHeight;
         }
 
-        // --- 4. CHARTS & GRAPHS ---
+        // CHARTS
         function initChart() {
             const ctx = document.getElementById('latencyChart').getContext('2d');
             chartInstance = new Chart(ctx, {
@@ -722,14 +906,14 @@
                 data: {
                     labels: Array(20).fill(''),
                     datasets: [{
-                        label: 'Response (ms)',
+                        label: 'ms',
                         data: latencyPoints,
-                        borderColor: '#00f2ff',
+                        borderColor: '#bc13fe',
                         borderWidth: 2,
                         tension: 0.4,
                         pointRadius: 0,
                         fill: true,
-                        backgroundColor: 'rgba(0, 242, 255, 0.1)'
+                        backgroundColor: 'rgba(188, 19, 254, 0.1)'
                     }]
                 },
                 options: {
@@ -752,23 +936,17 @@
             chartInstance.update();
         }
 
-        // Sim heartbeat for graph
         setInterval(() => {
-            const noise = Math.random() * 50 + 200; // Idle processing noise
+            const noise = Math.random() * 80 + 150;
             latencyPoints.push(noise);
             latencyPoints.shift();
             chartInstance.update();
-        }, 1000);
+        }, 1500);
 
         function incrementRequests() {
             requestCount++;
             document.getElementById('stat-req').innerText = requestCount;
         }
-
-        function startClock() {
-            // Nothing needed for now, time handled in msgs
-        }
-
     </script>
 </body>
 
