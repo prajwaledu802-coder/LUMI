@@ -1,0 +1,33 @@
+app_name: "LUMI"
+version: "1.0.0"
+
+identity:
+  name: "Lumi"
+  wake_words: ["lumi", "hey lumi", "lumi wake up"]
+  personality: "Calm, Intelligent, Friendly, Professional"
+  voice_id: "default"  # Can be specific ID for TTS
+
+ai:
+  default_model: "gemini-1.5-flash"
+  routing:
+    conversation: "gemini"
+    coding: "gpt-4o"  # fallback to others if key missing
+    creative: "gemini"
+  
+  api_keys:
+    gemini: "${GEMINI_API_KEY}"
+    openai: "${OPENAI_API_KEY}"
+
+voice:
+  stt_engine: "google"  # google, whisper_local
+  tts_engine: "pyttsx3" # pyttsx3, elevenlabs
+  language: "en-in"
+
+ui:
+  theme: "dark"
+  primary_color: "#00A8FF"  # Cyan/Blue futuristic
+  always_on_top: true
+
+paths:
+  logs: "logs/lumi.log"
+  memory: "data/memory.db"

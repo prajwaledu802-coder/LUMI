@@ -1,0 +1,31 @@
+# Core
+pyyaml
+python-dotenv
+colorama
+
+# Voice I/O
+SpeechRecognition
+pyttsx3
+pyaudio
+pvporcupine  # Picovoice Wake Word
+elevenlabs # ElevenLabs TTS
+
+# AI Clients
+google-generativeai
+openai
+
+# Tools
+selenium
+webdriver-manager
+psutil
+requests
+beautifulsoup4
+openmeteo-requests
+requests-cache
+retry-requests
+numpy
+pandas
+
+# UI
+PyQt6
+qtawesome
