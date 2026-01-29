@@ -5,7 +5,7 @@ import logging
 logger = logging.getLogger("GeminiAI")
 
 class GeminiClient:
-    def __init__(self, api_key=None, model_name="gemini-1.5-flash"):
+    def __init__(self, api_key=None, model_name="gemini-1.5-flash-latest"):
         self.api_key = api_key or os.getenv("GEMINI_API_KEY")
         if not self.api_key:
             logger.warning("Gemini API Key missing")
