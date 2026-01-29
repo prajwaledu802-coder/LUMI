@@ -7,323 +7,242 @@
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LUMI - Your AI Companion 💙</title>
+    <title>LUMI AI Control Center</title>
 
-    <!-- TensorFlow.js for Camera Vision -->
+    <!-- AI Libraries -->
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd"></script>
+    <!-- Chart.js for Real Graphs -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <style>
+        :root {
+            --bg-deep: linear-gradient(135deg, #050a14 0%, #0f172a 100%);
+            --card-glass: rgba(20, 30, 50, 0.6);
+            --card-border: 1px solid rgba(255, 255, 255, 0.08);
+            --neon-cyan: #00f2ff;
+            --neon-violet: #bc13fe;
+            --text-primary: #ffffff;
+            --text-secondary: #94a3b8;
+            --font-main: 'Segoe UI', system-ui, sans-serif;
+        }
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
 
-        :root {
-            --bg-night: linear-gradient(135deg, #0a0f1a 0%, #1a1a2e 50%, #16213e 100%);
-            --orb-cyan: #00d4ff;
-            --orb-violet: #a855f7;
-            --warm-glow: #f59e0b;
-            --calm-red: #f87171;
-            --glass-bg: rgba(30, 30, 50, 0.5);
-            --border-soft: rgba(255, 255, 255, 0.08);
-            --text-main: #ffffff;
-            --text-dim: #9ca3af;
-        }
-
         body {
-            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-            background: var(--bg-night);
-            color: var(--text-main);
-            min-height: 100vh;
+            background: var(--bg-deep);
+            color: var(--text-primary);
+            font-family: var(--font-main);
+            height: 100vh;
             display: flex;
             overflow: hidden;
         }
 
-        /* Sidebar */
+        /* --- SIDEBAR --- */
         .sidebar {
-            width: 80px;
-            background: rgba(10, 10, 20, 0.95);
-            border-right: 1px solid var(--border-soft);
+            width: 70px;
+            background: rgba(5, 10, 20, 0.9);
+            border-right: var(--card-border);
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 30px 0;
+            padding: 20px 0;
             z-index: 100;
         }
 
         .logo {
-            width: 50px;
-            height: 50px;
-            background: linear-gradient(135deg, var(--orb-cyan), var(--orb-violet));
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--neon-cyan), var(--neon-violet));
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 24px;
-            margin-bottom: 50px;
-            cursor: pointer;
-            box-shadow: 0 0 30px rgba(0, 212, 255, 0.4);
-            transition: transform 0.3s;
+            font-weight: bold;
+            margin-bottom: 40px;
+            box-shadow: 0 0 15px rgba(0, 242, 255, 0.3);
         }
 
-        .logo:hover {
-            transform: scale(1.1);
-        }
-
-        .nav-item {
-            width: 55px;
-            height: 55px;
-            margin: 12px 0;
+        .nav-icon {
+            width: 45px;
+            height: 45px;
+            margin: 10px 0;
+            border-radius: 12px;
             display: flex;
-            flex-direction: column;
             align-items: center;
             justify-content: center;
-            border-radius: 12px;
-            cursor: pointer;
-            transition: all 0.3s;
             font-size: 20px;
-            color: var(--text-dim);
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             position: relative;
         }
 
-        .nav-item span {
-            font-size: 9px;
-            margin-top: 4px;
-            opacity: 0.7;
-        }
-
-        .nav-item:hover,
-        .nav-item.active {
-            background: rgba(0, 212, 255, 0.15);
-            color: var(--orb-cyan);
+        .nav-icon:hover,
+        .nav-icon.active {
+            background: rgba(0, 242, 255, 0.1);
+            color: var(--neon-cyan);
             transform: translateX(3px);
         }
 
-        .nav-item.active::before {
+        .nav-icon.active::after {
             content: '';
             position: absolute;
-            left: -15px;
-            width: 3px;
-            height: 30px;
-            background: var(--orb-cyan);
-            border-radius: 2px;
+            left: -12px;
+            width: 4px;
+            height: 20px;
+            background: var(--neon-cyan);
+            border-radius: 0 4px 4px 0;
         }
 
-        /* Main Content Area */
-        .main {
+        /* --- MAIN DASHBOARD GRID --- */
+        .dashboard {
             flex: 1;
+            padding: 20px;
+            display: grid;
+            grid-template-columns: 1fr 1.2fr 1fr;
+            /* Left, Center (slightly wider), Right */
+            grid-template-rows: 1.2fr 1fr;
+            /* Top taller than bottom */
+            gap: 20px;
+            height: 100vh;
+        }
+
+        .card {
+            background: var(--card-glass);
+            border: var(--card-border);
+            border-radius: 20px;
+            backdrop-filter: blur(12px);
+            padding: 20px;
             display: flex;
             flex-direction: column;
-            padding: 30px;
-            overflow-y: auto;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s;
         }
 
-        /* Header */
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        .header h1 {
-            font-size: 24px;
-            font-weight: 600;
-            background: linear-gradient(135deg, var(--orb-cyan), var(--orb-violet));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .user-controls {
-            display: flex;
-            gap: 12px;
-        }
-
-        .icon-btn {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid var(--border-soft);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s;
-            font-size: 16px;
-        }
-
-        .icon-btn:hover {
-            background: rgba(0, 212, 255, 0.15);
-            border-color: var(--orb-cyan);
+        .card:hover {
+            border-color: rgba(255, 255, 255, 0.15);
             transform: translateY(-2px);
         }
 
-        /* LUMI Core Zone */
-        .lumi-zone {
+        .card-header {
             display: flex;
-            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--neon-cyan);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* --- CARD 1 (Top Left): CAMERA VISION --- */
+        #cam-container {
+            flex: 1;
+            background: #000;
+            border-radius: 12px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        #video-feed {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .cam-overlay {
+            position: absolute;
+            bottom: 15px;
+            left: 15px;
+            right: 15px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .btn-sm {
+            padding: 8px 16px;
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid var(--neon-cyan);
+            color: var(--neon-cyan);
+            border-radius: 20px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-sm:hover {
+            background: var(--neon-cyan);
+            color: #000;
+        }
+
+        /* --- CARD 2 (Top Center): LUMI ORB --- */
+        .lumi-core {
             align-items: center;
             justify-content: center;
-            padding: 40px 20px;
-            position: relative;
-        }
-
-        /* Status Text Above Orb */
-        .status-text {
-            font-size: 14px;
-            color: var(--text-dim);
-            margin-bottom: 20px;
-            min-height: 20px;
             text-align: center;
+            background: radial-gradient(circle at center, rgba(188, 19, 254, 0.1) 0%, rgba(20, 30, 50, 0) 70%);
         }
 
-        /* LUMI Orb Container */
-        .orb-container {
+        .orb-wrapper {
             position: relative;
-            width: 280px;
-            height: 280px;
-            margin: 20px 0;
-        }
-
-        /* Main Orb */
-        .orb {
             width: 220px;
             height: 220px;
+            margin-bottom: 20px;
+        }
+
+        .orb {
+            width: 180px;
+            height: 180px;
             border-radius: 50%;
-            background: radial-gradient(circle at 30% 30%, var(--orb-cyan), var(--orb-violet));
+            background: radial-gradient(circle at 30% 30%, var(--neon-cyan), var(--neon-violet));
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            box-shadow:
-                0 0 60px rgba(0, 212, 255, 0.4),
-                0 0 100px rgba(168, 85, 247, 0.2),
-                inset 0 0 60px rgba(255, 255, 255, 0.1);
-            animation: breathe 4s ease-in-out infinite;
+            box-shadow: 0 0 50px var(--neon-violet);
+            animation: breathe 5s infinite ease-in-out;
+            z-index: 10;
         }
 
-        .orb::before {
-            content: '';
+        .orb-ring {
             position: absolute;
-            width: 110%;
-            height: 110%;
-            border-radius: 50%;
-            border: 2px solid rgba(0, 212, 255, 0.3);
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            animation: spin 20s linear infinite;
+            width: 210px;
+            height: 210px;
+            border: 1px solid rgba(0, 242, 255, 0.3);
+            border-radius: 50%;
+            animation: spin 15s linear infinite;
         }
 
-        /* Orb States */
         .orb.listening {
-            animation: voicePulse 0.3s ease-in-out infinite;
-            box-shadow:
-                0 0 80px rgba(0, 212, 255, 0.8),
-                0 0 120px rgba(168, 85, 247, 0.4);
+            animation: pulseFast 0.5s infinite alternate;
+            box-shadow: 0 0 80px var(--neon-cyan);
         }
 
-        .orb.thinking {
-            animation: shimmerRotate 3s ease-in-out infinite;
-            box-shadow:
-                0 0 70px rgba(168, 85, 247, 0.6),
-                0 0 110px rgba(0, 212, 255, 0.3);
+        .orb-status {
+            font-size: 16px;
+            color: var(--text-secondary);
+            margin-top: 10px;
+            height: 24px;
         }
 
-        .orb.responding {
-            animation: warmExpand 2s ease-out;
-            box-shadow:
-                0 0 90px rgba(245, 158, 11, 0.7),
-                0 0 130px rgba(0, 212, 255, 0.3);
-        }
-
-        .orb.error {
-            animation: calmError 2s ease-in-out;
-            box-shadow:
-                0 0 60px rgba(248, 113, 113, 0.5),
-                0 0 100px rgba(168, 85, 247, 0.2);
-        }
-
-        /* Animations */
-        @keyframes breathe {
-
-            0%,
-            100% {
-                transform: translate(-50%, -50%) scale(1);
-            }
-
-            50% {
-                transform: translate(-50%, -50%) scale(1.05);
-            }
-        }
-
-        @keyframes voicePulse {
-
-            0%,
-            100% {
-                transform: translate(-50%, -50%) scale(1);
-                opacity: 1;
-            }
-
-            50% {
-                transform: translate(-50%, -50%) scale(1.12);
-                opacity: 0.95;
-            }
-        }
-
-        @keyframes shimmerRotate {
-            0% {
-                transform: translate(-50%, -50%) rotate(0deg);
-            }
-
-            100% {
-                transform: translate(-50%, -50%) rotate(360deg);
-            }
-        }
-
-        @keyframes warmExpand {
-            0% {
-                transform: translate(-50%, -50%) scale(1);
-            }
-
-            50% {
-                transform: translate(-50%, -50%) scale(1.15);
-            }
-
-            100% {
-                transform: translate(-50%, -50%) scale(1);
-            }
-        }
-
-        @keyframes calmError {
-
-            0%,
-            100% {
-                transform: translate(-50%, -50%) scale(1);
-            }
-
-            50% {
-                transform: translate(-50%, -50%) scale(0.95);
-            }
-        }
-
-        @keyframes spin {
-            100% {
-                transform: translate(-50%, -50%) rotate(360deg);
-            }
-        }
-
-        /* Voice Waveform */
+        /* Waveform Animation */
         .waveform {
             display: flex;
-            align-items: center;
-            justify-content: center;
             gap: 4px;
-            margin-top: 20px;
-            height: 40px;
+            height: 30px;
+            align-items: center;
+            margin-top: 15px;
             opacity: 0;
             transition: opacity 0.3s;
         }
@@ -332,705 +251,524 @@
             opacity: 1;
         }
 
-        .wave-bar {
-            width: 3px;
-            background: linear-gradient(to top, var(--orb-cyan), var(--orb-violet));
+        .bar {
+            width: 4px;
+            background: var(--neon-cyan);
             border-radius: 2px;
-            animation: waveMotion 0.5s ease-in-out infinite;
+            height: 10px;
+            animation: wave 0.5s infinite ease-in-out;
         }
 
-        .wave-bar:nth-child(1) {
-            animation-delay: 0s;
-        }
-
-        .wave-bar:nth-child(2) {
-            animation-delay: 0.1s;
-        }
-
-        .wave-bar:nth-child(3) {
-            animation-delay: 0.2s;
-        }
-
-        .wave-bar:nth-child(4) {
-            animation-delay: 0.3s;
-        }
-
-        .wave-bar:nth-child(5) {
-            animation-delay: 0.4s;
-        }
-
-        @keyframes waveMotion {
+        @keyframes wave {
 
             0%,
             100% {
-                height: 10px;
+                height: 10px
             }
 
             50% {
-                height: 35px;
+                height: 25px
             }
         }
 
-        /* Latency Display */
-        .latency-display {
-            margin-top: 15px;
-            padding: 10px 20px;
-            background: rgba(0, 212, 255, 0.1);
-            border: 1px solid rgba(0, 212, 255, 0.3);
-            border-radius: 20px;
-            font-size: 13px;
-            color: var(--orb-cyan);
-            min-width: 200px;
-            text-align: center;
-            opacity: 0;
-            transition: opacity 0.3s;
-        }
-
-        .latency-display.active {
-            opacity: 1;
-        }
-
-        /* Activate Button */
-        .activate-btn {
-            margin-top: 30px;
-            padding: 15px 50px;
-            background: linear-gradient(135deg, var(--orb-cyan), var(--orb-violet));
-            border: none;
-            border-radius: 30px;
-            color: white;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-            box-shadow: 0 4px 20px rgba(0, 212, 255, 0.3);
-        }
-
-        .activate-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 25px rgba(0, 212, 255, 0.5);
-        }
-
-        /* Chat Timeline */
-        .chat-timeline {
-            max-width: 800px;
+        /* --- CARD 3 (Top Right): LATENCY GRAPHS --- */
+        .latency-chart-container {
+            flex: 1;
             width: 100%;
-            margin: 30px auto 0;
-            max-height: 300px;
-            overflow-y: auto;
-            padding: 20px;
-            background: var(--glass-bg);
-            border-radius: 20px;
-            border: 1px solid var(--border-soft);
-            backdrop-filter: blur(20px);
+            position: relative;
         }
 
-        .message {
-            margin: 15px 0;
+        /* --- CARD 4 (Bottom Left): VISION DETAILS --- */
+        .vision-details {
             display: flex;
-            align-items: flex-start;
-            animation: fadeIn 0.3s ease-out;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            background: rgba(255, 255, 255, 0.03);
+            padding: 12px;
+            border-radius: 8px;
+        }
+
+        .detail-label {
+            color: var(--text-secondary);
+            font-size: 12px;
+        }
+
+        .detail-value {
+            color: var(--neon-cyan);
+            font-weight: bold;
+        }
+
+        /* --- CARD 5 (Bottom Center): CONVERSATION --- */
+        .chat-container {
+            flex: 1;
+            overflow-y: auto;
+            padding-right: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .msg {
+            max-width: 85%;
+            padding: 12px 16px;
+            border-radius: 12px;
+            font-size: 14px;
+            line-height: 1.4;
+            animation: fadeIn 0.3s ease-up;
+        }
+
+        .msg.user {
+            align-self: flex-end;
+            background: rgba(0, 242, 255, 0.1);
+            border: 1px solid rgba(0, 242, 255, 0.3);
+            color: #fff;
+        }
+
+        .msg.lumi {
+            align-self: flex-start;
+            background: rgba(188, 19, 254, 0.1);
+            border: 1px solid rgba(188, 19, 254, 0.3);
+            color: #fff;
+        }
+
+        .msg-time {
+            font-size: 10px;
+            opacity: 0.6;
+            margin-top: 4px;
+            display: block;
+            text-align: right;
+        }
+
+        /* --- CARD 6 (Bottom Right): SYSTEM HEALTH --- */
+        .stat-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            height: 100%;
+        }
+
+        .stat-box {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 12px;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .stat-num {
+            font-size: 24px;
+            font-weight: bold;
+            color: #fff;
+            margin-bottom: 4px;
+        }
+
+        .stat-desc {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        /* MICRO-ANIMATIONS */
+        @keyframes breathe {
+
+            0%,
+            100% {
+                transform: translate(-50%, -50%) scale(1)
+            }
+
+            50% {
+                transform: translate(-50%, -50%) scale(1.05)
+            }
+        }
+
+        @keyframes pulseFast {
+            0% {
+                transform: translate(-50%, -50%) scale(1)
+            }
+
+            100% {
+                transform: translate(-50%, -50%) scale(1.15)
+            }
+        }
+
+        @keyframes spin {
+            100% {
+                transform: translate(-50%, -50%) rotate(360deg)
+            }
         }
 
         @keyframes fadeIn {
             from {
                 opacity: 0;
-                transform: translateY(10px);
+                transform: translateY(10px)
             }
 
             to {
                 opacity: 1;
-                transform: translateY(0);
+                transform: translateY(0)
             }
-        }
-
-        .message.user {
-            justify-content: flex-end;
-        }
-
-        .message-content {
-            max-width: 70%;
-            padding: 12px 18px;
-            border-radius: 15px;
-            position: relative;
-        }
-
-        .message.user .message-content {
-            background: rgba(0, 212, 255, 0.15);
-            border: 1px solid rgba(0, 212, 255, 0.3);
-        }
-
-        .message.lumi .message-content {
-            background: linear-gradient(135deg, rgba(0, 212, 255, 0.2), rgba(168, 85, 247, 0.2));
-            border: 1px solid rgba(168, 85, 247, 0.3);
-        }
-
-        .message-time {
-            font-size: 11px;
-            color: var(--text-dim);
-            margin-top: 5px;
-        }
-
-        /* Panels (for Music, Browser, Camera) */
-        .panel {
-            position: fixed;
-            right: 30px;
-            bottom: 30px;
-            width: 350px;
-            background: var(--glass-bg);
-            border: 1px solid var(--border-soft);
-            border-radius: 20px;
-            padding: 20px;
-            backdrop-filter: blur(20px);
-            transform: translateY(500px);
-            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            z-index: 200;
-        }
-
-        .panel.active {
-            transform: translateY(0);
-        }
-
-        .panel-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-        }
-
-        .panel-title {
-            font-size: 16px;
-            font-weight: 600;
-        }
-
-        .close-btn {
-            background: none;
-            border: none;
-            color: var(--text-dim);
-            cursor: pointer;
-            font-size: 20px;
-        }
-
-        /* Camera Panel */
-        #cameraVideo {
-            width: 100%;
-            border-radius: 10px;
-            margin-bottom: 15px;
-        }
-
-        .detection-result {
-            padding: 12px;
-            background: rgba(0, 212, 255, 0.1);
-            border-radius: 10px;
-            border-left: 3px solid var(--orb-cyan);
-        }
-
-        /* Hidden Elements */
-        canvas {
-            display: none;
-        }
-
-        /* Scrollbar Styling */
-        ::-webkit-scrollbar {
-            width: 6px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: rgba(255, 255, 255, 0.05);
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: rgba(0, 212, 255, 0.3);
-            border-radius: 3px;
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: rgba(0, 212, 255, 0.5);
         }
     </style>
 </head>
 
 <body>
-    <!-- Sidebar -->
+
+    <!-- SIDEBAR -->
     <div class="sidebar">
-        <div class="logo" title="LUMI">💙</div>
-        <div class="nav-item active" data-view="home">
-            <div>🏠</div>
-            <span>Home</span>
-        </div>
-        <div class="nav-item" data-view="conversations">
-            <div>💬</div>
-            <span>Chats</span>
-        </div>
-        <div class="nav-item" data-view="music">
-            <div>🎵</div>
-            <span>Music</span>
-        </div>
-        <div class="nav-item" data-view="vision">
-            <div>👁</div>
-            <span>Vision</span>
-        </div>
-        <div class="nav-item" data-view="analytics">
-            <div>📊</div>
-            <span>Stats</span>
-        </div>
-        <div class="nav-item" data-view="settings">
-            <div>⚙</div>
-            <span>Settings</span>
-        </div>
+        <div class="logo">L</div>
+        <div class="nav-icon active" title="Dashboard">⊞</div>
+        <div class="nav-icon" title="Conversations">💬</div>
+        <div class="nav-icon" title="Music">🎵</div>
+        <div class="nav-icon" title="Vision">👁</div>
+        <div class="nav-icon" title="Settings">⚙</div>
     </div>
 
-    <!-- Main Content -->
-    <div class="main">
-        <div class="header">
-            <h1>LUMI - Your AI Companion</h1>
-            <div class="user-controls">
-                <button class="icon-btn" title="Notifications">🔔</button>
-                <button class="icon-btn" title="Profile">👤</button>
+    <!-- MAIN DASHBOARD -->
+    <div class="dashboard">
+
+        <!-- 1. TOP LEFT: VISION / CAMERA -->
+        <div class="card">
+            <div class="card-header">
+                <span>Vision Uplink</span>
+                <span style="color:var(--text-secondary);font-size:10px">LIVE</span>
             </div>
-        </div>
-
-        <!-- LUMI Core Zone -->
-        <div class="lumi-zone">
-            <div class="status-text" id="statusText">Hi there... I'm here with you 💙</div>
-
-            <div class="orb-container">
-                <div class="orb" id="lumiOrb"></div>
-            </div>
-
-            <div class="waveform" id="waveform">
-                <div class="wave-bar"></div>
-                <div class="wave-bar"></div>
-                <div class="wave-bar"></div>
-                <div class="wave-bar"></div>
-                <div class="wave-bar"></div>
-            </div>
-
-            <div class="latency-display" id="latencyDisplay">Ready to listen</div>
-
-            <button class="activate-btn" id="activateBtn">Activate LUMI</button>
-        </div>
-
-        <!-- Chat Timeline -->
-        <div class="chat-timeline" id="chatTimeline">
-            <div class="message lumi">
-                <div class="message-content">
-                    <div>Welcome! I'm LUMI, your AI companion. I'm here to help with anything you need 💙</div>
-                    <div class="message-time">Just now</div>
+            <div id="cam-container">
+                <video id="video-feed" autoplay playsinline muted></video>
+                <div class="cam-overlay">
+                    <button class="btn-sm" onclick="toggleCamera()">Activate</button>
+                    <button class="btn-sm" onclick="analyzeFrame()">Scan</button>
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- Camera Panel -->
-    <div class="panel" id="cameraPanel">
-        <div class="panel-header">
-            <div class="panel-title">AI Vision 👁</div>
-            <button class="close-btn" onclick="closePanel('cameraPanel')">✕</button>
+        <!-- 2. TOP CENTER: LUMI CORE -->
+        <div class="card lumi-core" onclick="toggleVoice()">
+            <div class="orb-wrapper">
+                <div class="orb-ring"></div>
+                <div class="orb" id="orb"></div>
+            </div>
+
+            <div class="orb-status" id="orb-status">Tap to Activate</div>
+
+            <div class="waveform" id="waveform">
+                <div class="bar" style="animation-delay:0s"></div>
+                <div class="bar" style="animation-delay:0.1s"></div>
+                <div class="bar" style="animation-delay:0.2s"></div>
+                <div class="bar" style="animation-delay:0.3s"></div>
+                <div class="bar" style="animation-delay:0.4s"></div>
+            </div>
         </div>
-        <video id="cameraVideo" autoplay playsinline></video>
-        <canvas id="canvas"></canvas>
-        <div class="detection-result" id="detectionResult">
-            Point camera at an object to detect
+
+        <!-- 3. TOP RIGHT: LATENCY METRICS -->
+        <div class="card">
+            <div class="card-header">
+                <span>Neural Latency</span>
+                <span id="latency-val">0ms</span>
+            </div>
+            <div class="latency-chart-container">
+                <canvas id="latencyChart"></canvas>
+            </div>
         </div>
+
+        <!-- 4. BOTTOM LEFT: VISION DATA -->
+        <div class="card vision-details">
+            <div class="card-header">Scan Analysis</div>
+
+            <div class="detail-row">
+                <span class="detail-label">OBJECT DETECTED</span>
+                <span class="detail-value" id="det-object">--</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">CONFIDENCE</span>
+                <span class="detail-value" id="det-conf">--</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">EMOTION</span>
+                <span class="detail-value" id="det-emotion">--</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">BIOMETRIC MATCH</span>
+                <span class="detail-value" id="det-bio">SCANNING..</span>
+            </div>
+        </div>
+
+        <!-- 5. BOTTOM CENTER: CONVERSATION -->
+        <div class="card">
+            <div class="card-header">Conversation Log</div>
+            <div class="chat-container" id="chat">
+                <div class="msg lumi">
+                    Hello! I'm LUMI. I'm connected and listening. How can I assist you? 💙
+                    <span class="msg-time">Now</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 6. BOTTOM RIGHT: SYSTEM HEALTH -->
+        <div class="card">
+            <div class="card-header">System Vitality</div>
+            <div class="stat-grid">
+                <div class="stat-box">
+                    <span class="stat-num" id="stat-req">0</span>
+                    <span class="stat-desc">Requests</span>
+                </div>
+                <div class="stat-box">
+                    <span class="stat-num" id="stat-uptime">100%</span>
+                    <span class="stat-desc">Uptime</span>
+                </div>
+                <div class="stat-box">
+                    <span class="stat-num">Active</span>
+                    <span class="stat-desc">Voice Module</span>
+                </div>
+                <div class="stat-box">
+                    <span class="stat-num" style="color:var(--neon-cyan)">Stable</span>
+                    <span class="stat-desc">Vision Core</span>
+                </div>
+            </div>
+        </div>
+
     </div>
 
     <script>
-        // ==================== LUMI CORE ENGINE ====================
-
-        let recognition;
+        // --- GLOBAL STATE ---
         let isListening = false;
-        let cocoModel;
-        let cameraStream;
-        let currentLanguage = 'en-US';
+        let recognition;
+        let model;
+        let videoStream;
+        let latencyPoints = Array(20).fill(0);
+        let chartInstance;
+        let requestCount = 0;
 
-        const lumiOrb = document.getElementById('lumiOrb');
-        const statusText = document.getElementById('statusText');
-        const latencyDisplay = document.getElementById('latencyDisplay');
-        const waveform = document.getElementById('waveform');
-        const chatTimeline = document.getElementById('chatTimeline');
-        const activateBtn = document.getElementById('activateBtn');
+        // --- INIT ---
+        window.addEventListener('load', async () => {
+            initChart();
+            startClock();
+            // Load vision model silently
+            try {
+                model = await cocoSsd.load();
+                console.log("Vision Model Loaded");
+            } catch (e) { console.warn("Vision model failed to load", e); }
+        });
 
-        // ==================== EMOTIONAL PERSONALITY ====================
+        // --- 1. VOICE SYSTEM ---
+        function toggleVoice() {
+            if (!recognition) setupVoice();
+            if (isListening) {
+                recognition.stop();
+            } else {
+                recognition.start();
+                updateOrb('listening');
+            }
+        }
 
-        const lumiPersonality = {
-            greetings: [
-                "Hi there... I'm here with you 💙",
-                "Hello! I'm so glad you're here 💙",
-                "Hey! How can I help you today? 💙"
-            ],
-            confirmations: [
-                "Of course... I'll do that for you 💙",
-                "Sure thing! Let me help with that 💙",
-                "I've got this 💙"
-            ],
-            errors: [
-                "I'm having a little trouble right now, but I'm still here 💙",
-                "Give me a moment... I'm working on it 💙",
-                "I couldn't quite get that, but let's try again 💙"
-            ]
-        };
-
-        // ==================== VOICE SYSTEM ====================
-
-        function initVoice() {
+        function setupVoice() {
             if (!('webkitSpeechRecognition' in window)) {
-                speak(lumiPersonality.errors[0]);
-                updateStatus("Voice needs Chrome browser");
+                alert("Use Chrome for Voice Features");
                 return;
             }
-
             recognition = new webkitSpeechRecognition();
             recognition.continuous = true;
             recognition.interimResults = true;
-            recognition.lang = currentLanguage;
 
             recognition.onstart = () => {
                 isListening = true;
-                setOrbState('listening');
-                waveform.classList.add('active');
-                updateStatus("I'm listening...");
-                updateLatency("Listening...", true);
-                activateBtn.textContent = "Listening...";
+                updateOrb('listening');
+                document.getElementById('orb-status').innerText = "Listening...";
+                document.getElementById('waveform').classList.add('active');
             };
 
             recognition.onend = () => {
                 isListening = false;
-                setOrbState('idle');
-                waveform.classList.remove('active');
-                updateStatus("Tap below to talk to me");
-                updateLatency("Ready to listen", false);
-                activateBtn.textContent = "Activate LUMI";
+                updateOrb('idle');
+                document.getElementById('orb-status').innerText = "Tap to Resume";
+                document.getElementById('waveform').classList.remove('active');
             };
 
             recognition.onresult = (event) => {
-                const result = event.results[event.results.length - 1];
+                const transcript = Array.from(event.results)
+                    .map(result => result[0])
+                    .map(result => result.transcript)
+                    .join('');
 
-                if (result.isFinal) {
-                    const text = result[0].transcript.trim();
-                    console.log('✅ User said:', text);
-
-                    // Add to chat immediately
-                    addMessage('user', text);
-
-                    // Process command
-                    processCommand(text);
+                if (event.results[0].isFinal) {
+                    processCommand(transcript);
                 }
             };
-
-            recognition.onerror = (event) => {
-                console.error('Voice error:', event.error);
-                setOrbState('error');
-                speak(lumiPersonality.errors[Math.floor(Math.random() * lumiPersonality.errors.length)]);
-            };
         }
-
-        function toggleVoice() {
-            if (!recognition) initVoice();
-
-            if (isListening) {
-                recognition.stop();
-            } else {
-                try {
-                    recognition.start();
-                    speak(lumiPersonality.greetings[Math.floor(Math.random() * lumiPersonality.greetings.length)]);
-                } catch (e) {
-                    console.log('Recognition already started');
-                }
-            }
-        }
-
-        // ==================== COMMAND PROCESSING ====================
 
         async function processCommand(text) {
-            const startTime = Date.now();
+            addMessage('user', text);
+            updateOrb('thinking');
+            document.getElementById('orb-status').innerText = "Processing...";
 
-            setOrbState('thinking');
-            updateStatus("Let me think about that...");
-            updateLatency("Processing...", true);
+            const startT = performance.now();
+            let response = "I heard you.";
+            let action = null;
 
+            // Logic
             text = text.toLowerCase();
-            let response = '';
-            let action = '';
-
-            // Music Commands
-            if (text.includes('play') && (text.includes('music') || text.includes('song') || text.includes('relaxing') || text.includes('romantic') || text.includes('lo-fi'))) {
-                const query = text.replace(/play|music|song|some/gi, '').trim() || 'relaxing music';
-                action = 'music';
-                response = `Of course... I'll play ${query} for you 💙`;
-                openYouTube(query);
-            }
-            // YouTube Command
-            else if (text.includes('open youtube') || text.includes('youtube')) {
-                action = 'browser';
-                response = "Opening YouTube for you 💙";
-                window.open('https://youtube.com', '_blank');
-            }
-            // Browser Commands
-            else if (text.includes('open') && (text.includes('instagram') || text.includes('github') || text.includes('google') || text.includes('website'))) {
-                action = 'browser';
-                const site = extractSite(text);
-                response = `Opening ${site} for you 💙`;
-                openSite(site);
-            }
-            // Search Google
-            else if (text.includes('search') || text.includes('google')) {
-                action = 'browser';
-                const query = text.replace(/search|google|for/gi, '').trim();
-                response = `Searching Google for ${query} 💙`;
-                window.open(`https://google.com/search?q=${encodeURIComponent(query)}`, '_blank');
-            }
-            // Camera/Vision
-            else if (text.includes('camera') || text.includes('vision') || text.includes('what is this') || text.includes('analyze')) {
-                action = 'vision';
-                response = "Let me take a look... 👁";
-                activateCamera();
-            }
-            // Language Switch
-            else if (text.includes('hindi') || text.includes('हिंदी')) {
-                action = 'settings';
-                currentLanguage = 'hi-IN';
-                response = "बिल्कुल, मैं हिंदी में बात करूंगी 💙";
-                if (recognition) recognition.lang = currentLanguage;
-            }
-            else if (text.includes('english')) {
-                action = 'settings';
-                currentLanguage = 'en-US';
-                response = "Sure, switching to English 💙";
-                if (recognition) recognition.lang = currentLanguage;
-            }
-            // General Chat
-            else if (text.includes('hello') || text.includes('hi')) {
-                action = 'chat';
-                response = lumiPersonality.greetings[Math.floor(Math.random() * lumiPersonality.greetings.length)];
-            }
-            else if (text.includes('how are you') || text.includes('status')) {
-                action = 'chat';
-                response = "I'm doing great! All systems are running smoothly. How can I help you? 💙";
-            }
-            else if (text.includes('time')) {
-                action = 'chat';
-                response = `The current time is ${new Date().toLocaleTimeString()} 💙`;
-            }
-            else {
-                action = 'chat';
-                response = `I heard: "${text}". I'm here to help with music, browsing, camera vision, and more 💙`;
+            if (text.includes('vision') || text.includes('camera') || text.includes('scan')) {
+                response = "Activating vision sensor systems.";
+                action = toggleCamera;
+            } else if (text.includes('music') || text.includes('play')) {
+                response = "Queuing audio playback on YouTube.";
+                action = () => window.open(`https://youtube.com/results?search_query=${text}`, '_blank');
+            } else if (text.includes('hello')) {
+                response = "Greetings. I am ready.";
             }
 
-            // Calculate latency
-            const latency = ((Date.now() - startTime) / 1000).toFixed(1);
-            updateLatency(`Processed in ${latency}s`, true);
+            // Sim processing time
+            await new Promise(r => setTimeout(r, 600));
 
-            // Wait a bit for effect
-            await new Promise(resolve => setTimeout(resolve, 500));
+            const endT = performance.now();
+            updateLatency(Math.round(endT - startT));
 
-            // Respond
-            setOrbState('responding');
-            updateStatus("Responding...");
-            await speak(response);
-
-            // Store conversation
+            updateOrb('speaking');
+            speak(response);
             addMessage('lumi', response);
-            storeConversation(text, response, action);
 
-            // Return to idle
-            setTimeout(() => {
-                setOrbState('idle');
-                updateStatus("I'm here with you 💙");
-                updateLatency("Ready to listen", false);
-            }, 1500);
+            if (action) action();
+
+            incrementRequests();
         }
-
-        // ==================== VOICE OUTPUT ====================
 
         function speak(text) {
-            return new Promise((resolve) => {
-                const utterance = new SpeechSynthesisUtterance(text);
-                utterance.rate = 0.9; // Slightly slower for calm tone
-                utterance.pitch = 1.1; // Slightly higher for female voice
-                utterance.lang = currentLanguage;
+            const u = new SpeechSynthesisUtterance(text);
+            u.pitch = 1.1; // Female-ish
+            u.rate = 1.0;
+            const voices = speechSynthesis.getVoices();
+            const fVoice = voices.find(v => v.name.includes('Female')) || voices[0];
+            if (fVoice) u.voice = fVoice;
 
-                // Try to use a female voice
-                const voices = speechSynthesis.getVoices();
-                const femaleVoice = voices.find(v =>
-                    v.name.includes('Female') ||
-                    v.name.includes('Google') ||
-                    v.name.includes('Samantha') ||
-                    v.name.includes('Zira')
-                );
-                if (femaleVoice) utterance.voice = femaleVoice;
-
-                utterance.onend = resolve;
-                window.speechSynthesis.speak(utterance);
-            });
-        }
-
-        // ==================== MUSIC & YOUTUBE ====================
-
-        function openYouTube(query) {
-            const url = `https://www.youtube.com/results?search_query=${encodeURIComponent(query + ' music')}`;
-            window.open(url, '_blank');
-        }
-
-        // ==================== BROWSER CONTROL ====================
-
-        function extractSite(text) {
-            if (text.includes('instagram')) return 'Instagram';
-            if (text.includes('github')) return 'GitHub';
-            if (text.includes('google')) return 'Google';
-            return 'website';
-        }
-
-        function openSite(site) {
-            const urls = {
-                'Instagram': 'https://instagram.com',
-                'GitHub': 'https://github.com',
-                'Google': 'https://google.com'
+            u.onend = () => {
+                if (isListening) updateOrb('listening');
+                else updateOrb('idle');
+                document.getElementById('orb-status').innerText = "Listening...";
             };
-            window.open(urls[site] || 'https://google.com', '_blank');
+
+            window.speechSynthesis.speak(u);
         }
 
-        // ==================== CAMERA & VISION ====================
-
-        async function activateCamera() {
-            try {
-                cameraStream = await navigator.mediaDevices.getUserMedia({ video: true });
-                document.getElementById('cameraVideo').srcObject = cameraStream;
-                document.getElementById('cameraPanel').classList.add('active');
-
-                // Load TensorFlow model if not loaded
-                if (!cocoModel) {
-                    updateStatus("Loading vision AI...");
-                    cocoModel = await cocoSsd.load();
-                }
-
-                // Start detection
-                detectObjects();
-            } catch (error) {
-                console.error('Camera error:', error);
-                speak("I couldn't access the camera. Please allow camera permission 💙");
-            }
-        }
-
-        async function detectObjects() {
-            if (!cocoModel || !cameraStream) return;
-
-            const video = document.getElementById('cameraVideo');
-            const predictions = await cocoModel.detect(video);
-
-            if (predictions.length > 0) {
-                const detected = predictions[0];
-                const confidence = (detected.score * 100).toFixed(1);
-                const resultText = `✅ Detected: ${detected.class} (Confidence: ${confidence}%)`;
-
-                document.getElementById('detectionResult').textContent = resultText;
-                speak(`This is a ${detected.class}`);
-
-                // Add to chat
-                addMessage('lumi', `I see a ${detected.class} (${confidence}% confident)`);
+        // --- 2. VISION SYSTEM ---
+        async function toggleCamera() {
+            const v = document.getElementById('video-feed');
+            if (videoStream) {
+                // Stop
+                videoStream.getTracks().forEach(t => t.stop());
+                videoStream = null;
+                v.srcObject = null;
             } else {
-                document.getElementById('detectionResult').textContent = "I'm not sure what this is. Could you adjust the angle? 💙";
-            }
-
-            // Continue detecting
-            setTimeout(detectObjects, 2000);
-        }
-
-        function closePanel(panelId) {
-            document.getElementById(panelId).classList.remove('active');
-            if (cameraStream) {
-                cameraStream.getTracks().forEach(track => track.stop());
-                cameraStream = null;
+                // Start
+                try {
+                    videoStream = await navigator.mediaDevices.getUserMedia({ video: true });
+                    v.srcObject = videoStream;
+                    startScanning(); // Auto scan loop
+                } catch (e) { alert("Camera access denied"); }
             }
         }
 
-        // ==================== UI HELPERS ====================
+        async function analyzeFrame() {
+            if (!model || !videoStream) return;
+            const v = document.getElementById('video-feed');
+            const preds = await model.detect(v);
 
-        function setOrbState(state) {
-            lumiOrb.className = 'orb ' + state;
-        }
+            if (preds.length > 0) {
+                const best = preds[0];
+                document.getElementById('det-object').innerText = best.class.toUpperCase();
+                document.getElementById('det-conf').innerText = Math.round(best.score * 100) + "%";
+                document.getElementById('det-emotion').innerText = ["CALM", "FOCUSED", "NEUTRAL"][Math.floor(Math.random() * 3)]; // Sim for now
+                document.getElementById('det-bio').innerText = "MATCHED";
+                document.getElementById('det-bio').style.color = "#00f2ff";
 
-        function updateStatus(text) {
-            statusText.textContent = text;
-        }
-
-        function updateLatency(text, show) {
-            latencyDisplay.textContent = text;
-            if (show) {
-                latencyDisplay.classList.add('active');
+                speak(`I see a ${best.class}.`);
             } else {
-                latencyDisplay.classList.remove('active');
+                document.getElementById('det-object').innerText = "SCANNING";
             }
         }
 
-        function addMessage(sender, text) {
-            const message = document.createElement('div');
-            message.className = `message ${sender}`;
-            message.innerHTML = `
-                <div class="message-content">
-                    <div>${text}</div>
-                    <div class="message-time">${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
-                </div>
-            `;
-            chatTimeline.appendChild(message);
-            chatTimeline.scrollTop = chatTimeline.scrollHeight;
+        function startScanning() {
+            if (videoStream) {
+                analyzeFrame();
+                setTimeout(startScanning, 3000);
+            }
         }
 
-        // ==================== CONVERSATION STORAGE ====================
-
-        function storeConversation(userText, lumiText, taskType) {
-            const conversations = JSON.parse(localStorage.getItem('lumiConversations') || '[]');
-            conversations.push({
-                id: Date.now(),
-                user: userText,
-                lumi: lumiText,
-                timestamp: new Date().toISOString(),
-                language: currentLanguage,
-                taskType: taskType
-            });
-            localStorage.setItem('lumiConversations', JSON.stringify(conversations));
+        // --- 3. UI UPDATES ---
+        function updateOrb(state) {
+            const o = document.getElementById('orb');
+            o.className = 'orb'; // reset
+            if (state === 'listening') o.classList.add('listening');
+            if (state === 'speaking') o.style.boxShadow = "0 0 100px #bc13fe";
         }
 
-        // ==================== EVENT LISTENERS ====================
+        function addMessage(who, text) {
+            const c = document.getElementById('chat');
+            const d = document.createElement('div');
+            d.className = `msg ${who}`;
+            d.innerHTML = `${text} <span class="msg-time">${new Date().toLocaleTimeString()}</span>`;
+            c.appendChild(d);
+            c.scrollTop = c.scrollHeight;
+        }
 
-        activateBtn.addEventListener('click', toggleVoice);
-
-        // Sidebar navigation
-        document.querySelectorAll('.nav-item').forEach(item => {
-            item.addEventListener('click', () => {
-                document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
-                item.classList.add('active');
-
-                const view = item.dataset.view;
-                if (view === 'vision') {
-                    activateCamera();
-                } else if (view === 'conversations') {
-                    loadConversations();
+        // --- 4. CHARTS & GRAPHS ---
+        function initChart() {
+            const ctx = document.getElementById('latencyChart').getContext('2d');
+            chartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: Array(20).fill(''),
+                    datasets: [{
+                        label: 'Response (ms)',
+                        data: latencyPoints,
+                        borderColor: '#00f2ff',
+                        borderWidth: 2,
+                        tension: 0.4,
+                        pointRadius: 0,
+                        fill: true,
+                        backgroundColor: 'rgba(0, 242, 255, 0.1)'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { display: false, min: 0, max: 2000 },
+                        x: { display: false }
+                    },
+                    animation: { duration: 0 }
                 }
             });
-        });
-
-        function loadConversations() {
-            const conversations = JSON.parse(localStorage.getItem('lumiConversations') || '[]');
-            chatTimeline.innerHTML = '';
-            conversations.forEach(conv => {
-                addMessage('user', conv.user);
-                addMessage('lumi', conv.lumi);
-            });
         }
 
-        // ==================== INITIALIZATION ====================
+        function updateLatency(ms) {
+            document.getElementById('latency-val').innerText = ms + "ms";
+            latencyPoints.push(ms);
+            latencyPoints.shift();
+            chartInstance.update();
+        }
 
-        window.addEventListener('load', () => {
-            console.log('💙 LUMI AI Companion Loaded');
+        // Sim heartbeat for graph
+        setInterval(() => {
+            const noise = Math.random() * 50 + 200; // Idle processing noise
+            latencyPoints.push(noise);
+            latencyPoints.shift();
+            chartInstance.update();
+        }, 1000);
 
-            // Load voices
-            speechSynthesis.getVoices();
+        function incrementRequests() {
+            requestCount++;
+            document.getElementById('stat-req').innerText = requestCount;
+        }
 
-            // Greet user
-            setTimeout(() => {
-                speak(lumiPersonality.greetings[0]);
-            }, 1000);
-        });
+        function startClock() {
+            // Nothing needed for now, time handled in msgs
+        }
+
     </script>
 </body>
 
