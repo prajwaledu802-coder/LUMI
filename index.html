@@ -4,103 +4,91 @@
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LUMI AI | Dashboard</title>
+    <title>LUMI AI Dashboard</title>
     <style>
-        :root {
-            --bg-dark: #050509;
-            --bg-panel: #13131f;
-            --accent-blue: #4d8dff;
-            --accent-purple: #7b42f6;
-            --accent-cyan: #00d2ff;
-            --text-main: #ffffff;
-            --text-sub: #7a7a9d;
-            --font-main: 'Segoe UI', sans-serif;
-        }
-
         * {
-            box-sizing: border-box;
             margin: 0;
             padding: 0;
-            outline: none;
+            box-sizing: border-box;
         }
 
         body {
-            background-color: var(--bg-dark);
-            color: var(--text-main);
-            font-family: var(--font-main);
-            height: 100vh;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: linear-gradient(135deg, #0a0f1a 0%, #1a1a2e 100%);
+            color: #fff;
+            min-height: 100vh;
             display: flex;
-            overflow: hidden;
+            overflow-x: hidden;
         }
 
-        /* --- SIDEBAR --- */
+        /* Sidebar */
         .sidebar {
             width: 80px;
-            background: #0f0f15;
-            border-right: 1px solid rgba(255, 255, 255, 0.05);
+            background: rgba(10, 10, 20, 0.9);
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
             display: flex;
             flex-direction: column;
             align-items: center;
             padding: 30px 0;
-            z-index: 10;
         }
 
         .logo {
-            width: 40px;
-            height: 40px;
-            background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             border-radius: 50%;
             display: flex;
-            justify-content: center;
             align-items: center;
-            font-weight: bold;
-            font-size: 1.2rem;
-            margin-bottom: 50px;
-            box-shadow: 0 0 20px rgba(77, 141, 255, 0.3);
+            justify-content: center;
+            font-size: 24px;
+            margin-bottom: 40px;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
         }
 
-        .nav-icon {
-            color: var(--text-sub);
-            font-size: 1.4rem;
-            margin-bottom: 35px;
+        .nav-item {
+            width: 50px;
+            height: 50px;
+            margin: 15px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
             cursor: pointer;
-            transition: 0.3s;
+            transition: all 0.3s;
+            font-size: 20px;
+            color: #6b7280;
         }
 
-        .nav-icon.active,
-        .nav-icon:hover {
-            color: var(--accent-blue);
+        .nav-item:hover,
+        .nav-item.active {
+            background: rgba(102, 126, 234, 0.2);
+            color: #667eea;
         }
 
-        .nav-icon.bottom {
-            margin-top: auto;
-        }
-
-        /* --- MAIN CONTENT --- */
+        /* Main Content */
         .main {
             flex: 1;
-            padding: 30px;
-            display: flex;
-            flex-direction: column;
+            padding: 40px;
         }
 
-        /* HEADER */
         .header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 30px;
+            margin-bottom: 40px;
         }
 
-        .app-title {
-            font-size: 1.5rem;
+        .header h1 {
+            font-size: 28px;
             font-weight: 600;
         }
 
-        .header-tools {
+        .user-info {
             display: flex;
-            gap: 20px;
+            gap: 15px;
             align-items: center;
         }
 
@@ -108,371 +96,297 @@
             width: 40px;
             height: 40px;
             border-radius: 50%;
-            background: var(--bg-panel);
-            color: var(--text-sub);
+            background: rgba(255, 255, 255, 0.05);
             border: none;
             cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
         }
 
-        .user-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: url('https://i.pravatar.cc/100?img=11');
-            /* Mock Avatar */
-            background-size: cover;
+        .icon-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
         }
 
-        /* DASHBOARD GRID */
+        /* Dashboard Grid */
         .dashboard-grid {
             display: grid;
-            grid-template-columns: 350px 1fr 300px;
-            /* Left Panel, Middle, Right Column */
-            grid-template-rows: 250px 1fr;
-            gap: 20px;
-            height: 100%;
+            grid-template-columns: 400px 1fr;
+            gap: 30px;
+            height: calc(100vh - 200px);
         }
 
-        /* CARD STYLES */
         .card {
-            background: var(--bg-panel);
-            border-radius: 25px;
-            padding: 25px;
-            position: relative;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            background: rgba(30, 30, 50, 0.6);
+            border-radius: 20px;
+            padding: 30px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
-        .card-header {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 20px;
-        }
-
-        .card-label {
-            color: var(--text-sub);
-            font-size: 0.9rem;
-        }
-
-        .card-value {
-            font-size: 2rem;
-            font-weight: 600;
-            margin-top: 5px;
-        }
-
-        /* 1. AI ASSISTANT PANEL (Large Left) */
+        /* AI Orb Panel */
         .ai-panel {
-            grid-column: 1 / 2;
-            grid-row: 1 / 3;
-            background: linear-gradient(160deg, #1a1a2e 0%, #0d0d15 100%);
             display: flex;
             flex-direction: column;
             align-items: center;
-            text-align: center;
             justify-content: space-between;
+            text-align: center;
         }
 
-        /* 3D ORB */
-        .ai-orb-container {
+        .orb-container {
+            position: relative;
+            width: 250px;
+            height: 250px;
+            margin: 30px 0;
+        }
+
+        .orb {
             width: 200px;
             height: 200px;
-            position: relative;
-            margin: 40px 0;
-        }
-
-        .ai-orb {
-            width: 100%;
-            height: 100%;
             border-radius: 50%;
-            background: radial-gradient(circle at 30% 30%, #4d8dff, #7b42f6);
-            filter: blur(2px);
-            animation: float 6s infinite ease-in-out;
-            position: relative;
-            z-index: 2;
-        }
-
-        .ai-orb-mesh {
+            background: radial-gradient(circle at 30% 30%, #667eea 0%, #764ba2 100%);
             position: absolute;
-            top: -10%;
-            left: -10%;
-            width: 120%;
-            height: 120%;
-            border: 1px solid rgba(77, 141, 255, 0.2);
-            border-radius: 50%;
-            transform: rotateX(70deg);
-            animation: spin 10s linear infinite;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            box-shadow: 0 0 60px rgba(102, 126, 234, 0.6);
+            animation: float 6s ease-in-out infinite;
         }
 
-        .try-btn {
-            background: linear-gradient(90deg, var(--accent-blue), var(--accent-purple));
-            color: white;
-            border: none;
-            padding: 12px 30px;
-            border-radius: 20px;
-            font-weight: 600;
-            cursor: pointer;
-            box-shadow: 0 5px 20px rgba(123, 66, 246, 0.4);
-            transition: 0.3s;
-        }
-
-        .try-btn:hover {
-            transform: scale(1.05);
-        }
-
-        /* 2. STATS CARDS */
-        .total-sale {
-            grid-column: 2 / 3;
-            grid-row: 1 / 2;
-        }
-
-        .bar-chart {
-            display: flex;
-            align-items: flex-end;
-            gap: 10px;
-            height: 100px;
-            margin-top: 20px;
-        }
-
-        .bar {
-            flex: 1;
-            background: #2a2a3d;
-            border-radius: 5px;
-            transition: 0.3s;
-        }
-
-        .bar:hover {
-            background: var(--accent-blue);
-            box-shadow: 0 0 10px var(--accent-blue);
-        }
-
-        .bar.active {
-            background: repeating-linear-gradient(45deg, var(--accent-blue), var(--accent-blue) 2px, transparent 2px, transparent 4px);
-        }
-
-        .donut-card {
-            grid-column: 3 / 4;
-            grid-row: 1 / 2;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .donut-chart {
-            width: 120px;
-            height: 120px;
-            border-radius: 50%;
-            background: conic-gradient(var(--accent-purple) 0% 60%, var(--accent-cyan) 60% 85%, #2a2a3d 85% 100%);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .donut-inner {
-            width: 70px;
-            height: 70px;
-            background: var(--bg-panel);
-            border-radius: 50%;
-        }
-
-        .credit-card {
-            grid-column: 3 / 4;
-            grid-row: 2 / 3;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .gauge {
-            width: 150px;
-            height: 75px;
-            border-radius: 150px 150px 0 0;
-            background: #2a2a3d;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .gauge-fill {
+        .orb::before {
+            content: '';
+            position: absolute;
             width: 100%;
             height: 100%;
-            background: var(--accent-blue);
-            transform-origin: bottom center;
-            transform: rotate(45deg);
-            /* Mock value */
+            border-radius: 50%;
+            border: 2px solid rgba(102, 126, 234, 0.3);
+            animation: spin 20s linear infinite;
         }
 
-        .gauge-text {
-            font-size: 2rem;
-            font-weight: bold;
-            margin-top: -30px;
-            z-index: 5;
-        }
-
-        .revenue-card {
-            grid-column: 2 / 3;
-            grid-row: 2 / 3;
-        }
-
-        .wave-chart {
-            width: 100%;
-            height: 100px;
-            background: linear-gradient(90deg, transparent 0%, rgba(77, 141, 255, 0.1) 100%);
-            position: relative;
-            overflow: hidden;
-            margin-top: 20px;
-            clip-path: polygon(0 100%, 0 70%, 10% 80%, 20% 60%, 30% 75%, 40% 50%, 50% 80%, 60% 40%, 70% 60%, 80% 30%, 90% 50%, 100% 20%, 100% 100%);
-        }
-
-        .wave-line {
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, var(--accent-purple), var(--accent-cyan));
-            opacity: 0.5;
-        }
-
-        /* ANIMATIONS */
         @keyframes float {
 
             0%,
             100% {
-                transform: translateY(0) scale(1);
+                transform: translate(-50%, -50%) translateY(0);
             }
 
             50% {
-                transform: translateY(-10px) scale(1.02);
+                transform: translate(-50%, -50%) translateY(-15px);
             }
         }
 
         @keyframes spin {
             100% {
-                transform: rotateX(70deg) rotateZ(360deg);
+                transform: rotate(360deg);
             }
         }
 
-        @keyframes talkPulse {
-            0% {
-                transform: scale(1);
+        .listening .orb {
+            animation: pulse 1s ease-in-out infinite;
+            box-shadow: 0 0 80px rgba(102, 126, 234, 1);
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                transform: translate(-50%, -50%) scale(1);
             }
 
             50% {
-                transform: scale(1.2);
-                filter: brightness(1.5);
-            }
-
-            100% {
-                transform: scale(1);
+                transform: translate(-50%, -50%) scale(1.1);
             }
         }
 
-        .speaking .ai-orb {
-            animation: talkPulse 0.5s infinite;
+        .ai-title {
+            font-size: 14px;
+            color: #9ca3af;
+            margin-bottom: 10px;
+        }
+
+        .ai-subtitle {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        .ai-description {
+            color: #6b7280;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+
+        .voice-btn {
+            padding: 15px 40px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 25px;
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .voice-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+
+        /* Stats Panel */
+        .stats-panel {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            grid-template-rows: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .stat-card {
+            background: rgba(20, 20, 35, 0.5);
+            border-radius: 15px;
+            padding: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .stat-label {
+            color: #6b7280;
+            font-size: 13px;
+            margin-bottom: 10px;
+        }
+
+        .stat-value {
+            font-size: 32px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .stat-chart {
+            margin-top: 20px;
+            height: 80px;
+            display: flex;
+            align-items: flex-end;
+            gap: 8px;
+        }
+
+        .bar {
+            flex: 1;
+            background: rgba(102, 126, 234, 0.3);
+            border-radius: 4px;
+            transition: all 0.3s;
+        }
+
+        .bar:hover {
+            background: rgba(102, 126, 234, 0.8);
+        }
+
+        /* Status Message */
+        .status-message {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(102, 126, 234, 0.1);
+            border-radius: 10px;
+            border-left: 3px solid #667eea;
+            display: none;
+        }
+
+        .status-message.active {
+            display: block;
         }
     </style>
 </head>
 
 <body>
-
-    <!-- SIDEBAR -->
+    <!-- Sidebar -->
     <div class="sidebar">
         <div class="logo">⚡</div>
-        <div class="nav-icon active">▣</div>
-        <div class="nav-icon">📈</div>
-        <div class="nav-icon">🔍</div>
-        <div class="nav-icon">📅</div>
-        <div class="nav-icon bottom">⚙</div>
+        <div class="nav-item active">▣</div>
+        <div class="nav-item">📊</div>
+        <div class="nav-item">💬</div>
+        <div class="nav-item">⚙️</div>
     </div>
 
-    <!-- MAIN -->
+    <!-- Main Content -->
     <div class="main">
         <div class="header">
-            <div class="app-title">LUMI AI Dashboard</div>
-            <div class="header-tools">
-                <button class="icon-btn">📅</button>
-                <button class="icon-btn">💬</button>
+            <h1>LUMI AI Dashboard</h1>
+            <div class="user-info">
                 <button class="icon-btn">🔔</button>
-                <div class="user-avatar"></div>
+                <button class="icon-btn">⚙️</button>
+                <button class="icon-btn">👤</button>
             </div>
         </div>
 
         <div class="dashboard-grid">
+            <!-- AI Panel -->
+            <div class="card ai-panel" id="aiPanel">
+                <div>
+                    <div class="ai-title">AI Assistant</div>
+                    <div class="ai-subtitle">LUMI Voice Core</div>
 
-            <!-- AI ASSISTANT PANEL -->
-            <div class="card ai-panel">
-                <div style="width:100%; text-align:left;">
-                    <div class="card-label">AI Assistant</div> <!-- Matches image text location -->
-                </div>
+                    <div class="orb-container">
+                        <div class="orb"></div>
+                    </div>
 
-                <div class="ai-orb-container">
-                    <div class="ai-orb-mesh"></div>
-                    <div class="ai-orb" id="orb"></div>
-                </div>
-
-                <div style="margin-bottom: 20px;">
-                    <h3 style="margin-bottom: 10px;">LUMI Voice Core</h3>
-                    <p style="color:var(--text-sub); font-size:0.9rem; line-height:1.5;">
-                        Click "Try Now" to activate voice commands.<br>I am listening...
+                    <p class="ai-description">
+                        Advanced AI assistant with voice recognition and natural language processing.
+                        Click below to activate voice commands.
                     </p>
                 </div>
 
-                <button class="try-btn" onclick="toggleVoice()">Try Now</button>
-            </div>
+                <button class="voice-btn" onclick="toggleVoice()">Activate Voice</button>
 
-            <!-- TOTAL REQUESTS (Sales) -->
-            <div class="card total-sale">
-                <div class="card-header">
-                    <div>
-                        <div class="card-label">Total Requests</div>
-                        <div class="card-value">90,744</div>
-                    </div>
-                    <div class="icon-btn">↗</div>
-                </div>
-                <div class="bar-chart">
-                    <div class="bar" style="height:30%"></div>
-                    <div class="bar" style="height:50%"></div>
-                    <div class="bar" style="height:40%"></div>
-                    <div class="bar" style="height:70%"></div>
-                    <div class="bar active" style="height:100%"></div> <!-- Striped active bar -->
-                    <div class="bar" style="height:60%"></div>
-                    <div class="bar" style="height:80%"></div>
+                <div class="status-message" id="statusMessage">
+                    <strong>Status:</strong> <span id="statusText">Ready</span>
                 </div>
             </div>
 
-            <!-- DONUT CHART -->
-            <div class="card donut-card">
-                <div class="donut-chart">
-                    <div class="donut-inner"></div>
-                </div>
-            </div>
-
-            <!-- SYSTEM LOAD (Activity) -->
-            <div class="card revenue-card">
-                <div class="card-header">
-                    <div>
-                        <div class="card-label">Activity Trend</div>
-                        <div class="card-value">High Traffic</div>
+            <!-- Stats Panel -->
+            <div class="card stats-panel">
+                <div class="stat-card">
+                    <div class="stat-label">Total Requests</div>
+                    <div class="stat-value">90,744</div>
+                    <div class="stat-chart">
+                        <div class="bar" style="height: 40%"></div>
+                        <div class="bar" style="height: 65%"></div>
+                        <div class="bar" style="height: 50%"></div>
+                        <div class="bar" style="height: 85%"></div>
+                        <div class="bar" style="height: 100%"></div>
+                        <div class="bar" style="height: 70%"></div>
                     </div>
                 </div>
-                <div class="wave-chart">
-                    <div class="wave-line"></div>
+
+                <div class="stat-card">
+                    <div class="stat-label">Response Time</div>
+                    <div class="stat-value">24ms</div>
+                    <p style="color: #10b981; margin-top: 10px; font-size: 14px;">↑ 15% faster</p>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-label">Active Users</div>
+                    <div class="stat-value">2,847</div>
+                    <p style="color: #6b7280; margin-top: 10px; font-size: 14px;">Real-time</p>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-label">System Health</div>
+                    <div class="stat-value">98%</div>
+                    <div
+                        style="margin-top: 15px; height: 8px; background: rgba(102, 126, 234, 0.2); border-radius: 4px; overflow: hidden;">
+                        <div style="width: 98%; height: 100%; background: linear-gradient(90deg, #667eea, #10b981);">
+                        </div>
+                    </div>
                 </div>
             </div>
-
-            <!-- GAUGE (Credit) -->
-            <div class="card credit-card">
-                <div class="card-label" style="margin-bottom:20px;">System Health</div>
-                <div class="gauge">
-                    <div class="gauge-fill"></div>
-                </div>
-                <div class="gauge-text">98%</div>
-            </div>
-
         </div>
     </div>
 
     <script>
-        // --- VOICE LOGIC (Web Speech API) ---
         let recognition;
         let isListening = false;
-        const orb = document.getElementById('orb');
 
         function toggleVoice() {
             if (!recognition) initVoice();
@@ -486,7 +400,7 @@
 
         function initVoice() {
             if (!('webkitSpeechRecognition' in window)) {
-                alert("Voice not supported in this browser. Use Chrome.");
+                showStatus('Voice not supported. Please use Chrome browser.', 'error');
                 return;
             }
 
@@ -496,41 +410,82 @@
 
             recognition.onstart = () => {
                 isListening = true;
-                orb.style.boxShadow = "0 0 50px #00d2ff";
-                document.querySelector('.try-btn').innerText = "Listening...";
-                speak("I am listening.");
+                document.getElementById('aiPanel').classList.add('listening');
+                document.querySelector('.voice-btn').textContent = 'Listening...';
+                showStatus('I am listening for your command', 'active');
+                speak('I am listening');
             };
 
             recognition.onend = () => {
                 isListening = false;
-                orb.style.boxShadow = "none";
-                document.querySelector('.try-btn').innerText = "Try Now";
-                orb.classList.remove('speaking');
+                document.getElementById('aiPanel').classList.remove('listening');
+                document.querySelector('.voice-btn').textContent = 'Activate Voice';
+                hideStatus();
             };
 
             recognition.onresult = (event) => {
                 const text = event.results[0][0].transcript;
-                console.log("Heard:", text);
+                console.log('Heard:', text);
                 handleCommand(text);
+            };
+
+            recognition.onerror = (event) => {
+                showStatus('Error: ' + event.error, 'error');
             };
         }
 
         function handleCommand(text) {
-            let response = "I processed that request.";
-            if (text.toLowerCase().includes("hello")) response = "Hello! Systems are fully operational.";
-            if (text.toLowerCase().includes("status")) response = "All systems green. Efficiency at 98 percent.";
-            if (text.toLowerCase().includes("time")) response = "The current time is " + new Date().toLocaleTimeString();
+            showStatus(`Processing: "${text}"`, 'active');
 
-            speak(response);
+            let response = 'Command received and processed.';
+
+            if (text.toLowerCase().includes('hello')) {
+                response = 'Hello! All systems are operational.';
+            } else if (text.toLowerCase().includes('status')) {
+                response = 'System health is at 98 percent. All modules functional.';
+            } else if (text.toLowerCase().includes('time')) {
+                response = 'The current time is ' + new Date().toLocaleTimeString();
+            }
+
+            setTimeout(() => {
+                speak(response);
+                showStatus(response, 'success');
+            }, 500);
         }
 
         function speak(text) {
-            orb.classList.add('speaking');
             const utterance = new SpeechSynthesisUtterance(text);
-            utterance.onend = () => {
-                orb.classList.remove('speaking');
-            };
+            utterance.rate = 1.0;
+            utterance.pitch = 1.0;
             window.speechSynthesis.speak(utterance);
+        }
+
+        function showStatus(message, type = 'active') {
+            const statusMessage = document.getElementById('statusMessage');
+            const statusText = document.getElementById('statusText');
+            statusText.textContent = message;
+            statusMessage.classList.add('active');
+
+            if (type === 'error') {
+                statusMessage.style.borderLeftColor = '#ef4444';
+            } else if (type === 'success') {
+                statusMessage.style.borderLeftColor = '#10b981';
+            } else {
+                statusMessage.style.borderLeftColor = '#667eea';
+            }
+        }
+
+        function hideStatus() {
+            setTimeout(() => {
+                document.getElementById('statusMessage').classList.remove('active');
+            }, 3000);
+        }
+
+        // Test voice availability on load
+        if ('speechSynthesis' in window && 'webkitSpeechRecognition' in window) {
+            console.log('✅ Voice features available');
+        } else {
+            console.warn('⚠️ Voice features require Chrome browser');
         }
     </script>
 </body>
